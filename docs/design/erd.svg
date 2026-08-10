@@ -1,0 +1,174 @@
+﻿<svg xmlns="http://www.w3.org/2000/svg" width="2200" height="1500" viewBox="0 0 2200 1500">
+  <defs>
+    <style>
+      .title { font: bold 30px Arial, sans-serif; fill: #0f172a; }
+      .subtitle { font: 16px Arial, sans-serif; fill: #334155; }
+      .box-title { font: bold 20px Arial, sans-serif; fill: white; }
+      .box-text { font: 15px Arial, sans-serif; fill: #0f172a; }
+      .small { font: 13px Arial, sans-serif; fill: #334155; }
+      .dim { fill: #dbeafe; stroke: #2563eb; stroke-width: 2; rx: 12; }
+      .fact { fill: #fee2e2; stroke: #dc2626; stroke-width: 2; rx: 12; }
+      .audit { fill: #ecfccb; stroke: #65a30d; stroke-width: 2; rx: 12; }
+      .stg { fill: #fef3c7; stroke: #d97706; stroke-width: 2; rx: 12; }
+      .hdr-dim { fill: #2563eb; }
+      .hdr-fact { fill: #dc2626; }
+      .hdr-audit { fill: #65a30d; }
+      .hdr-stg { fill: #d97706; }
+      .line { stroke: #475569; stroke-width: 2.5; fill: none; marker-end: url(#arrow); }
+      .line2 { stroke: #94a3b8; stroke-width: 2; fill: none; marker-end: url(#arrow); }
+    </style>
+    <marker id="arrow" markerWidth="10" markerHeight="10" refX="8" refY="3" orient="auto" markerUnits="strokeWidth">
+      <path d="M0,0 L0,6 L9,3 z" fill="#475569" />
+    </marker>
+  </defs>
+
+  <text x="40" y="50" class="title">PaySim Fraud Detection Data Mart - Kimball ERD</text>
+  <text x="40" y="82" class="subtitle">TV2 - Khai | Bottom-up Kimball | Grain chính: 1 dòng CSV = 1 dòng FactTransaction</text>
+
+  <!-- Staging -->
+  <rect x="70" y="180" width="340" height="270" class="stg"/>
+  <rect x="70" y="180" width="340" height="44" class="hdr-stg" rx="12"/>
+  <text x="90" y="208" class="box-title">stg.TransactionRaw</text>
+  <text x="90" y="245" class="box-text">PK: (BatchID, RowNumberInChunk)</text>
+  <text x="90" y="272" class="box-text">StepRaw, TypeCode, Amount</text>
+  <text x="90" y="299" class="box-text">NameOrig, NameDest</text>
+  <text x="90" y="326" class="box-text">OldBalanceOrg, NewBalanceOrig</text>
+  <text x="90" y="353" class="box-text">OldBalanceDest, NewBalanceDest</text>
+  <text x="90" y="380" class="box-text">IsFraud, IsFlaggedFraud</text>
+  <text x="90" y="407" class="small">Batch metadata + dữ liệu thô từ CSV</text>
+
+  <!-- Audit -->
+  <rect x="70" y="520" width="340" height="150" class="audit"/>
+  <rect x="70" y="520" width="340" height="44" class="hdr-audit" rx="12"/>
+  <text x="90" y="548" class="box-title">audit.ETLBatchLog</text>
+  <text x="90" y="590" class="box-text">PK: BatchID</text>
+  <text x="90" y="617" class="box-text">SourceFileName, Status</text>
+  <text x="90" y="644" class="box-text">StartedAt, FinishedAt, Message</text>
+
+  <rect x="70" y="700" width="340" height="145" class="audit"/>
+  <rect x="70" y="700" width="340" height="44" class="hdr-audit" rx="12"/>
+  <text x="90" y="728" class="box-title">audit.RejectLog</text>
+  <text x="90" y="770" class="box-text">PK: RejectID</text>
+  <text x="90" y="797" class="box-text">FK: BatchID</text>
+  <text x="90" y="824" class="box-text">ChunkIndex, StepRaw, Reason</text>
+
+  <rect x="70" y="875" width="340" height="155" class="audit"/>
+  <rect x="70" y="875" width="340" height="44" class="hdr-audit" rx="12"/>
+  <text x="90" y="903" class="box-title">audit.ReconciliationLog</text>
+  <text x="90" y="945" class="box-text">PK: ReconID</text>
+  <text x="90" y="972" class="box-text">FK: BatchID</text>
+  <text x="90" y="999" class="box-text">FactRows, FactAmount</text>
+  <text x="90" y="1026" class="box-text">ExpectedSourceRows, Status</text>
+
+  <!-- Dimensions left/top -->
+  <rect x="560" y="130" width="300" height="180" class="dim"/>
+  <rect x="560" y="130" width="300" height="42" class="hdr-dim" rx="12"/>
+  <text x="580" y="158" class="box-title">dim.DimDate</text>
+  <text x="580" y="200" class="box-text">PK: DateKey</text>
+  <text x="580" y="227" class="box-text">StepDay</text>
+  <text x="580" y="254" class="box-text">DayOfWeek, DayOfWeekNum</text>
+  <text x="580" y="281" class="box-text">WeekOfSimulation, IsWeekend</text>
+
+  <rect x="930" y="130" width="300" height="170" class="dim"/>
+  <rect x="930" y="130" width="300" height="42" class="hdr-dim" rx="12"/>
+  <text x="950" y="158" class="box-title">dim.DimTime</text>
+  <text x="950" y="200" class="box-text">PK: TimeKey</text>
+  <text x="950" y="227" class="box-text">HourOfDay</text>
+  <text x="950" y="254" class="box-text">TimeSlot, IsPeakHour</text>
+
+  <rect x="1300" y="130" width="330" height="180" class="dim"/>
+  <rect x="1300" y="130" width="330" height="42" class="hdr-dim" rx="12"/>
+  <text x="1320" y="158" class="box-title">dim.DimTransactionType</text>
+  <text x="1320" y="200" class="box-text">PK: TransactionTypeKey</text>
+  <text x="1320" y="227" class="box-text">UQ: TypeCode</text>
+  <text x="1320" y="254" class="box-text">TypeName</text>
+  <text x="1320" y="281" class="box-text">IsHighRiskType, Description</text>
+
+  <!-- Center fact -->
+  <rect x="790" y="430" width="620" height="300" class="fact"/>
+  <rect x="790" y="430" width="620" height="46" class="hdr-fact" rx="12"/>
+  <text x="810" y="460" class="box-title">fact.FactTransaction</text>
+  <text x="810" y="505" class="box-text">PK: TransactionKey</text>
+  <text x="810" y="532" class="box-text">FK: DateKey → DimDate</text>
+  <text x="810" y="559" class="box-text">FK: TimeKey → DimTime</text>
+  <text x="810" y="586" class="box-text">FK: TransactionTypeKey → DimTransactionType</text>
+  <text x="810" y="613" class="box-text">FK: OrigAccountKey, DestAccountKey → DimAccount</text>
+  <text x="810" y="640" class="box-text">FK: AmountBandKey → DimAmountBand</text>
+  <text x="810" y="667" class="box-text">Measures: Amount, Old/New balances, IsFraud, IsFlaggedFraud</text>
+  <text x="810" y="694" class="box-text">Derived: BalanceDropOrig = OldBalanceOrig - NewBalanceOrig</text>
+
+  <!-- Lower dimensions -->
+  <rect x="560" y="830" width="300" height="155" class="dim"/>
+  <rect x="560" y="830" width="300" height="42" class="hdr-dim" rx="12"/>
+  <text x="580" y="858" class="box-title">dim.DimAccount</text>
+  <text x="580" y="900" class="box-text">PK: AccountKey</text>
+  <text x="580" y="927" class="box-text">UQ: AccountID</text>
+  <text x="580" y="954" class="box-text">AccountType (C/M)</text>
+
+  <rect x="930" y="830" width="300" height="180" class="dim"/>
+  <rect x="930" y="830" width="300" height="42" class="hdr-dim" rx="12"/>
+  <text x="950" y="858" class="box-title">dim.DimAmountBand</text>
+  <text x="950" y="900" class="box-text">PK: AmountBandKey</text>
+  <text x="950" y="927" class="box-text">UQ: BandCode</text>
+  <text x="950" y="954" class="box-text">BandLabel</text>
+  <text x="950" y="981" class="box-text">LowerBound, UpperBound</text>
+
+  <!-- Scoring/alert dimensions -->
+  <rect x="1560" y="430" width="320" height="195" class="dim"/>
+  <rect x="1560" y="430" width="320" height="42" class="hdr-dim" rx="12"/>
+  <text x="1580" y="458" class="box-title">dim.DimRiskPolicy</text>
+  <text x="1580" y="500" class="box-text">PK: RiskPolicyKey</text>
+  <text x="1580" y="527" class="box-text">PolicyVersion, RiskLevel</text>
+  <text x="1580" y="554" class="box-text">ScoreThresholdMin/Max</text>
+  <text x="1580" y="581" class="box-text">RecommendedAction, IsActive</text>
+
+  <rect x="1560" y="680" width="320" height="195" class="dim"/>
+  <rect x="1560" y="680" width="320" height="42" class="hdr-dim" rx="12"/>
+  <text x="1580" y="708" class="box-title">dim.DimModelVersion</text>
+  <text x="1580" y="750" class="box-text">PK: ModelVersionKey</text>
+  <text x="1580" y="777" class="box-text">ModelName, Version</text>
+  <text x="1580" y="804" class="box-text">Precision, Recall, F2, PrAUC</text>
+  <text x="1580" y="831" class="box-text">Threshold, IsProduction</text>
+
+  <!-- Score fact -->
+  <rect x="780" y="1080" width="620" height="220" class="fact"/>
+  <rect x="780" y="1080" width="620" height="46" class="hdr-fact" rx="12"/>
+  <text x="800" y="1110" class="box-title">fact.FactModelScore</text>
+  <text x="800" y="1155" class="box-text">PK: ScoreKey</text>
+  <text x="800" y="1182" class="box-text">FK: TransactionKey → FactTransaction</text>
+  <text x="800" y="1209" class="box-text">FK: ModelVersionKey → DimModelVersion</text>
+  <text x="800" y="1236" class="box-text">FK: RiskPolicyKey → DimRiskPolicy</text>
+  <text x="800" y="1263" class="box-text">FK: DateKey → DimDate | FraudScore, RiskLevel, RecommendedAction</text>
+
+  <!-- Alert fact -->
+  <rect x="1490" y="1060" width="430" height="230" class="fact"/>
+  <rect x="1490" y="1060" width="430" height="46" class="hdr-fact" rx="12"/>
+  <text x="1510" y="1090" class="box-title">fact.FactAlert</text>
+  <text x="1510" y="1135" class="box-text">PK: AlertKey</text>
+  <text x="1510" y="1162" class="box-text">FK: TransactionKey → FactTransaction</text>
+  <text x="1510" y="1189" class="box-text">FK: ScoreKey → FactModelScore</text>
+  <text x="1510" y="1216" class="box-text">FK: RiskPolicyKey, DateKey</text>
+  <text x="1510" y="1243" class="box-text">AlertLevel, AlertStatus, FraudScore, AlertAmount</text>
+
+  <!-- Lines -->
+  <path d="M410 315 C520 315, 540 315, 790 520" class="line"/>
+  <path d="M410 595 C590 595, 640 520, 790 520" class="line2"/>
+  <path d="M410 770 C600 770, 660 590, 790 590" class="line2"/>
+  <path d="M410 950 C610 950, 690 650, 790 650" class="line2"/>
+
+  <path d="M710 310 C710 360, 880 360, 880 430" class="line"/>
+  <path d="M1080 300 C1080 355, 1040 355, 1040 430" class="line"/>
+  <path d="M1465 310 C1465 370, 1210 370, 1210 430" class="line"/>
+  <path d="M710 830 C710 770, 930 770, 930 730" class="line"/>
+  <path d="M1080 830 C1080 770, 1120 770, 1120 730" class="line"/>
+
+  <path d="M1410 540 C1475 540, 1495 540, 1560 540" class="line"/>
+  <path d="M1410 1240 C1470 1240, 1470 1190, 1490 1190" class="line"/>
+  <path d="M1400 1180 C1480 1180, 1480 1180, 1490 1180" class="line"/>
+  <path d="M1720 875 C1720 980, 1250 980, 1250 1080" class="line"/>
+  <path d="M1560 540 C1460 540, 1460 1180, 1490 1180" class="line2"/>
+  <path d="M700 310 C700 1020, 860 1020, 860 1080" class="line2"/>
+  <path d="M1100 730 C1100 890, 1030 890, 1030 1080" class="line2"/>
+
+  <text x="70" y="1385" class="subtitle">Lưu ý: Đây là sơ đồ Kimball/ERD mức triển khai cho phần TV2. Nguồn thiết kế nghiệp vụ gốc: `docs/design/bus_matrix.md`.</text>
+</svg>
