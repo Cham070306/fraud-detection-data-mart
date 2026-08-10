@@ -161,7 +161,7 @@ fraud-detection-data-mart/
 
 ```powershell
 # Clone repo
-git clone https://github.com/<your-org>/fraud-detection-data-mart.git
+git clone https://github.com/Cham070306/fraud-detection-data-mart.git
 cd fraud-detection-data-mart
 
 # Tạo virtual environment
