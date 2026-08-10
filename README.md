@@ -236,7 +236,7 @@ Hoặc chạy trực tiếp Python:
 python -m src.etl.run_etl
 ```
 
-**Kết quả mong đợi:**
+**Kết quả kỳ vọng:**
 - Staging: 6.362.620 dòng loaded
 - Fact_Transaction: 6.362.620 dòng
 - Reconciliation: PASS ✅
@@ -247,7 +247,7 @@ python -m src.etl.run_etl
 .\scripts\train_model.ps1
 ```
 
-**Kết quả mong đợi:**
+**Kết quả kỳ vọng:**
 - Model file lưu tại `models/`
 - Recall ≥ 0.80, F2-Score ≥ 0.70
 
@@ -257,7 +257,7 @@ python -m src.etl.run_etl
 .\scripts\score_transactions.ps1
 ```
 
-**Kết quả mong đợi:**
+**Kết quả kỳ vọng:**
 - `FactModelScore`: 6.362.620 records
 - `FactAlert`: ~vài nghìn records (HIGH + CRITICAL)
 
