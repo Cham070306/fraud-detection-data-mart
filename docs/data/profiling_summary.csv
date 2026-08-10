@@ -1,0 +1,12 @@
+column,dtype,non_null,null_count,null_pct,distinct,min,max,note
+step,int64,6362620,0,0.00,743,1,743,"Gio mo phong, 1 step = 1 gio, 743 steps ~ 31 ngay"
+type,object,6362620,0,0.00,5,CASH_IN,TRANSFER,"5 loai: CASH_IN, CASH_OUT, DEBIT, PAYMENT, TRANSFER"
+amount,float64,6362620,0,0.00,-,0.0,92445516.64,Tong amount = 1144392944759.77
+nameOrig,object,6362620,0,0.00,6353307,-,-,"Tat ca bat dau bang C (Customer), 0 merchant o phia orig"
+oldbalanceOrg,float64,6362620,0,0.00,-,0.0,-,So du truoc cua tai khoan nguon
+newbalanceOrig,float64,6362620,0,0.00,-,0.0,-,So du sau cua tai khoan nguon
+nameDest,object,6362620,0,0.00,2722362,-,-,"C=4211125, M=2151495 (Merchant chi la dich)"
+oldbalanceDest,float64,6362620,0,0.00,-,0.0,-,So du truoc cua tai khoan dich
+newbalanceDest,float64,6362620,0,0.00,-,0.0,-,So du sau cua tai khoan dich
+isFraud,int64,6362620,0,0.00,2,0,1,"Fraud=8213 (0.129%), Non-fraud=6354407"
+isFlaggedFraud,int64,6362620,0,0.00,2,0,1,"Flagged=16, khong dang tin cay lam nhan"
