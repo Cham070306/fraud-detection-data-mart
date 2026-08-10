@@ -1,0 +1,56 @@
+# configs/risk_policy.yaml
+# PaySim Fraud Detection Data Mart — Risk Decision Policy
+# Version: v1.0
+# Last Updated: 2026-08-09
+# Owner: TV1 (BA/Lead) + TV4 (ML Engineer)
+#
+# Xem tài liệu chi tiết tại: docs/design/decision_policy.md
+
+policy_version: "v1.0"
+effective_date: "2026-08-09"
+
+# QUY ƯỚC RANH GIỚI (Boundary Rule):
+#   score_min ≤ fraud_score < score_max  → áp dụng cho LOW, MEDIUM, HIGH
+#   Riêng CRITICAL: score_min ≤ fraud_score ≤ 1.00  → inclusive cả 2 đầu
+#   Ví dụ: score = 0.30 → thuộc MEDIUM (không phải LOW)
+#          score = 0.60 → thuộc HIGH (không phải MEDIUM)
+#          score = 0.85 → thuộc CRITICAL (không phải HIGH)
+risk_levels:
+  - level: "LOW"
+    score_min: 0.00        # ≥ 0.00 (inclusive)
+    score_max: 0.30        # < 0.30 (exclusive)
+    action: "ALLOW"
+    generate_alert: false
+    priority: 4
+    description: "Giao dịch có rủi ro thấp, cho phép tự động"
+
+  - level: "MEDIUM"
+    score_min: 0.30        # ≥ 0.30 (inclusive)
+    score_max: 0.60        # < 0.60 (exclusive)
+    action: "STEP_UP_VERIFY"
+    generate_alert: false
+    priority: 3
+    description: "Nghi ngờ vừa, yêu cầu xác thực thêm"
+
+  - level: "HIGH"
+    score_min: 0.60        # ≥ 0.60 (inclusive)
+    score_max: 0.85        # < 0.85 (exclusive)
+    action: "HOLD_AND_REVIEW"
+    generate_alert: true
+    alert_level: "HIGH"
+    priority: 2
+    description: "Rủi ro cao, tạm giữ và xem xét thủ công"
+
+  - level: "CRITICAL"
+    score_min: 0.85        # ≥ 0.85 (inclusive)
+    score_max: 1.00        # ≤ 1.00 (inclusive — bao gồm cả điểm 1.00)
+    action: "BLOCK_AND_ALERT"
+    generate_alert: true
+    alert_level: "CRITICAL"
+    priority: 1
+    description: "Rủi ro cực cao, chặn ngay và cảnh báo khẩn"
+
+# Ngưỡng mặc định cho binary classification (IsPredictedFraud = 1 nếu score ≥ threshold)
+# Được tối ưu bởi TV4 (ML Engineer) dựa trên Precision-Recall Curve
+# TODO: TV4 cập nhật giá trị sau khi chạy select_threshold.py
+default_classification_threshold: 0.50

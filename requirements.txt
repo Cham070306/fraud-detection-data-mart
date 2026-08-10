@@ -1,0 +1,32 @@
+# ============================================================
+# PaySim Fraud Detection Data Mart — Python Dependencies
+# ============================================================
+# Cài đặt: pip install -r requirements.txt
+# Python version: 3.11+
+# ============================================================
+
+# --- Data Processing ---
+pandas==2.2.2
+numpy==1.26.4
+
+# --- Database ---
+pyodbc==5.1.0          # Kết nối SQL Server
+sqlalchemy==2.0.30     # ORM / connection pooling
+python-dotenv==1.0.1   # Đọc biến môi trường từ .env
+
+# --- Machine Learning ---
+scikit-learn==1.5.0
+lightgbm==4.3.0
+imbalanced-learn==0.12.3   # SMOTE để xử lý mất cân bằng nhãn
+joblib==1.4.2               # Lưu/load model (.pkl)
+
+# --- Visualization & EDA ---
+matplotlib==3.9.0
+seaborn==0.13.2
+
+# --- Dashboard ---
+streamlit==1.35.0
+
+# --- Config & Utilities ---
+pyyaml==6.0.1          # Đọc risk_policy.yaml
+tqdm==4.66.4           # Progress bar cho ETL
