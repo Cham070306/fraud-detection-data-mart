@@ -63,14 +63,15 @@ Dataset PaySim mô phỏng **6.362.620 giao dịch** trong 30 ngày với **8.21
 ## 5. Phạm vi Dự án (Scope)
 
 ### 5.1 Trong phạm vi (In Scope)
-- [x] Data Mart Star Schema (SQL Server): Staging, Dimensions, Facts, BI Views.
-- [x] ETL Pipeline: Extract từ CSV, Transform/Validate, Load theo chunk.
-- [x] Data Quality & Reconciliation.
-- [x] Feature Engineering từ dữ liệu giao dịch PaySim.
-- [x] Huấn luyện & tối ưu ngưỡng mô hình ML (LightGBM/Random Forest).
-- [x] Scoring giao dịch và phân loại rủi ro theo policy.
-- [x] Power BI Dashboard (5 trang: Overview, Transaction Analysis, Model Performance, Alert Queue, ETL Quality).
-- [x] Streamlit Alert Queue Application.
+> **Ghi chú trạng thái:** Các mục đánh dấu `[ ]` là **đang triển khai** — hiện chỉ mới có khung file (0 bytes), chưa có code / SQL / Dashboard hoạt động. Mục nào hoàn thành sẽ được đánh dấu `[x]` kèm bằng chứng.
+- [ ] Data Mart Star Schema (SQL Server): Staging, Dimensions, Facts, BI Views.
+- [ ] ETL Pipeline: Extract từ CSV, Transform/Validate, Load theo chunk.
+- [ ] Data Quality & Reconciliation.
+- [ ] Feature Engineering từ dữ liệu giao dịch PaySim.
+- [ ] Huấn luyện & tối ưu ngưỡng mô hình ML (LightGBM/Random Forest).
+- [ ] Scoring giao dịch và phân loại rủi ro theo policy.
+- [ ] Power BI Dashboard (5 trang: Overview, Transaction Analysis, Model Performance, Alert Queue, ETL Quality).
+- [ ] Streamlit Alert Queue Application.
 - [x] Tài liệu đầy đủ (7 file bàn giao của TV1).
 
 ### 5.2 Ngoài phạm vi (Out of Scope)
@@ -149,3 +150,4 @@ CSV (PaySim.csv)
 | Phiên bản | Ngày | Người cập nhật | Nội dung thay đổi |
 |-----------|------|----------------|-------------------|
 | v1.0 | 2026-08-09 | TV1 | Khởi tạo Project Charter |
+| v1.1 | 2026-08-10 | TV1 | Fix §5.1: đổi 8 mục `[x]` không có bằng chứng (file trong `sql/`, `src/`, `scripts/`, `notebooks/`, `dashboard/` còn trống 0 bytes) → `[ ]` (Đang triển khai); giữ `[x]` duy nhất cho mục Tài liệu TV1 (đã có nội dung) |
