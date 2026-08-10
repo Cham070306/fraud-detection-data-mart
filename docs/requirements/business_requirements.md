@@ -19,7 +19,7 @@ Tài liệu này mô tả các yêu cầu nghiệp vụ cho hệ thống **Fraud
 | **BQ-04** | Tài khoản thực hiện giao dịch gian lận có **pattern số dư bất thường** như thế nào? (oldbalanceOrg → newbalanceOrig sau giao dịch) | Phân tích Pattern | `fact.FactTransaction` + `dim.DimAccount` |
 | **BQ-05** | Mô hình ML phát hiện gian lận đạt **Recall và Precision** bao nhiêu? F2-Score (ưu tiên Recall) là bao nhiêu? | Đo lường Mô hình | `fact.FactModelScore` + `dim.DimModelVersion` |
 | **BQ-06** | Bao nhiêu phần trăm **tổng thiệt hại tài chính từ gian lận** đã được hệ thống phát hiện và ngăn chặn? (Captured Fraud Loss Rate) | KPI Tài chính | `fact.FactModelScore` + `fact.FactTransaction` *(Tính trên TP của mô hình — dùng FactModelScore thay vì FactAlert vì FactAlert chỉ có HIGH/CRITICAL, sẽ bỏ sót fraud score thấp hơn ngưỡng sinh alert)* |
-| **BQ-07** | Số lượng cảnh báo phân bổ theo **mức độ rủi ro** (LOW / MEDIUM / HIGH / CRITICAL) như thế nào? Tỷ lệ False Positive trên từng mức là bao nhiêu? | Vận hành Alert | `fact.FactAlert` + `dim.DimRiskPolicy` |
+| **BQ-07** | Số lượng cảnh báo phân bổ theo **mức độ rủi ro (chỉ HIGH và CRITICAL)** như thế nào? Tỷ lệ False Positive trên từng mức là bao nhiêu? *(Chỉ phân tích 2 mức có sinh cảnh báo trong `FactAlert`: **HIGH** và **CRITICAL** — LOW và MEDIUM không sinh cảnh báo, xem `FR-DSS-01` và `Decision Policy`)* | Vận hành Alert | `fact.FactAlert` + `dim.DimRiskPolicy` |
 | **BQ-08** | Pipeline ETL có đảm bảo **tính toàn vẹn dữ liệu** không? Số dòng từ Staging đến Fact có khớp nhau không? (Reconciliation) | Chất lượng Dữ liệu | `stg.raw_paysim` → `fact.FactTransaction` |
 
 ---
@@ -123,3 +123,4 @@ Tài liệu này mô tả các yêu cầu nghiệp vụ cho hệ thống **Fraud
 |-----------|------|----------------|-------------------|
 | v1.0 | 2026-08-09 | TV1 | Khởi tạo tài liệu Business Requirements |
 | v1.1 | 2026-08-10 | TV1 | Fix B1: FR-DSS-02 phân tách rõ action của FactModelScore (4 mức) vs FactAlert (chỉ HOLD_AND_REVIEW, BLOCK_AND_ALERT); Fix B2: BQ-06 nguồn bảng đồng bộ thành FactModelScore+FactTransaction |
+| v1.2 | 2026-08-10 | TV1 | Fix P1-3: BQ-07 làm rõ chỉ phân tích **2 mức HIGH / CRITICAL** (FactAlert không chứa LOW/MEDIUM) — đồng bộ với KPI-A02 (v1.2) |
