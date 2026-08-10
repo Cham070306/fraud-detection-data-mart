@@ -27,6 +27,13 @@ seaborn==0.13.2
 # --- Dashboard ---
 streamlit==1.35.0
 
+# --- API Service ---
+fastapi==0.111.0         # API scoring service (src/api)
+uvicorn[standard]==0.30.1  # ASGI server cho FastAPI
+
 # --- Config & Utilities ---
 pyyaml==6.0.1          # Đọc risk_policy.yaml
 tqdm==4.66.4           # Progress bar cho ETL
+
+# --- Testing ---
+pytest==8.2.2          # Unit & integration tests (tests/)

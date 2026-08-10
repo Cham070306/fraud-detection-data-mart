@@ -238,7 +238,7 @@ python -m src.etl.run_etl
 
 **Kết quả kỳ vọng:**
 - Staging: 6.362.620 dòng loaded
-- Fact_Transaction: 6.362.620 dòng
+- FactTransaction: 6.362.620 dòng
 - Reconciliation: PASS ✅
 
 ### Bước 5: Train mô hình ML
@@ -304,3 +304,12 @@ Truy cập: `http://localhost:8501`
 ## 📄 License
 
 [MIT License](LICENSE) — Đây là đồ án học thuật, không dùng cho mục đích thương mại.
+
+---
+
+## 📝 Lịch sử Thay đổi
+
+| Phiên bản | Ngày | Người cập nhật | Nội dung thay đổi |
+|-----------|------|----------------|-------------------|
+| v1.0 | 2026-08-09 | TV1 | Khởi tạo README |
+| v1.1 | 2026-08-10 | TV1 | Fix R1: sửa tên bảng `Fact_Transaction` → `FactTransaction` (đồng bộ Bus Matrix); thêm mục Lịch sử Thay đổi |

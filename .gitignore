@@ -1,0 +1,39 @@
+# ============================================================
+# PaySim Fraud Detection Data Mart — .gitignore
+# ============================================================
+
+# --- Python ---
+__pycache__/
+*.py[cod]
+*$py.class
+.venv/
+venv/
+env/
+*.egg-info/
+dist/
+build/
+
+# --- Credentials & Secrets (KHÔNG commit) ---
+.env
+.env.*
+!.env.example
+configs/database.yaml
+configs/database.example.yaml
+
+# --- Dữ liệu thô & trung gian (KHÔNG commit — PaySim.csv ~493MB) ---
+data/raw/
+data/interim/
+data/processed/
+
+# --- Models (file lớn — không lưu .pkl/.joblib lên Git) ---
+models/*.pkl
+models/*.joblib
+
+# --- Logs ---
+logs/
+
+# --- Test, Notebook & IDE ---
+.pytest_cache/
+.ipynb_checkpoints/
+.vscode/
+.idea/

@@ -104,10 +104,10 @@ CSV (PaySim.csv)
 [STAGING Layer]         ← SQL Server: stg.raw_paysim
       │ ETL Transform + Validate
       ▼
-[DIMENSION Tables]      ← dim.DimDate, DimTime, DimTransactionType,
-      │                    DimAccount, DimAmountBand, DimRiskPolicy, DimModelVersion
+[DIMENSION Tables]      ← dim.DimDate, dim.DimTime, dim.DimTransactionType,
+      │                    dim.DimAccount, dim.DimAmountBand, dim.DimRiskPolicy, dim.DimModelVersion
       ▼
-[FACT Tables]           ← fact.FactTransaction, FactModelScore, FactAlert
+[FACT Tables]           ← fact.FactTransaction, fact.FactModelScore, fact.FactAlert
       │
       ├──► [BI VIEWS]          ← vw_TransactionSummary, vw_FraudAnalysis, vw_ModelPerformance,
       │                           vw_AlertSummary, vw_ETLQuality
@@ -153,3 +153,4 @@ CSV (PaySim.csv)
 | v1.0 | 2026-08-09 | TV1 | Khởi tạo Project Charter |
 | v1.1 | 2026-08-10 | TV1 | Fix §5.1: đổi 8 mục `[x]` không có bằng chứng (file trong `sql/`, `src/`, `scripts/`, `notebooks/`, `dashboard/` còn trống 0 bytes) → `[ ]` (Đang triển khai); giữ `[x]` duy nhất cho mục Tài liệu TV1 (đã có nội dung) |
 | v1.2 | 2026-08-10 | TV1 | Fix §7: chuẩn hóa tên BI Views trong sơ đồ kiến trúc về 5 views thống nhất (`vw_TransactionSummary`, `vw_FraudAnalysis`, `vw_ModelPerformance`, `vw_AlertSummary`, `vw_ETLQuality`) — đồng bộ với Bus Matrix v1.3 |
+| v1.3 | 2026-08-10 | TV1 | Fix §7: thống nhất prefix schema (`dim.` / `fact.`) cho toàn bộ tên bảng trong sơ đồ kiến trúc |
