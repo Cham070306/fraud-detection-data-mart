@@ -22,6 +22,15 @@ FROM fact.FactTransaction
 GROUP BY IsFraud;
 GO
 
+-- EDA-01 independent reconciliation (run by the DW/ETL owner after full load)
+-- Expected for the standard PaySim file: 6,362,620 / 8,213 / 16.
+SELECT
+    COUNT_BIG(*) AS TotalRows,
+    SUM(CASE WHEN IsFraud = 1 THEN 1 ELSE 0 END) AS FraudRows,
+    SUM(CASE WHEN IsFlaggedFraud = 1 THEN 1 ELSE 0 END) AS FlaggedFraudRows
+FROM fact.FactTransaction;
+GO
+
 -- Amount reconciliation
 SELECT
     SUM(Amount) AS TotalAmount,

@@ -1,138 +1,89 @@
-# Data Insights - PaySim Fraud Detection
-# Tac gia: Khai (TV2)
-# Ngay: 2026-08-10
+# Khảo sát và phân tích dữ liệu PaySim – EDA-01
 
-## 1. Tong quan tap du lieu
+**Nguồn:** `PS_20174392719_1491204439457_log.csv`
 
-| Thong tin | Gia tri |
-|-----------|---------|
-| Tong so dong | 6.362.620 |
-| Tong so cot | 11 |
-| Null values | 0 (khong co) |
-| Khoang thoi gian | Step 1 - 743 (~ 31 ngay mo phong) |
-| Tong amount | 1.144.392.944.759.77 don vi |
+**Ngày chạy:** 2026-08-12
 
-## 2. Phan phoi theo loai giao dich (type)
+**Thực hiện:** Khải; **kiểm chứng/phụ trách hạng mục:** Châm
 
-| Type | So dong | Ty le |
-|------|---------|-------|
-| CASH_IN | 1.399.284 | 22.0% |
-| CASH_OUT | 2.237.500 | 35.2% |
-| DEBIT | 41.432 | 0.7% |
-| PAYMENT | 2.151.495 | 33.8% |
-| TRANSFER | 532.909 | 8.4% |
+**Phương pháp:** đọc toàn bộ CSV theo chunk 200.000 dòng; ground truth là `isFraud`.
 
-**Insight DW:** TypeCode la business key cua DimTransactionType. IsHighRiskType = 1 cho TRANSFER va CASH_OUT.
+## 1. Tổng quan và chất lượng dữ liệu
 
-## 3. Phan tich gian lan (isFraud)
+| Chỉ số | Kết quả đã kiểm chứng |
+|---|---:|
+| Số dòng / số cột | 6.362.620 / 11 |
+| Null | 0 |
+| Step | 1–743 (31 ngày mô phỏng) |
+| Tổng amount | 1.144.392.944.759,77 |
+| Fraud count | 8.213 |
+| Fraud rate | 0,129% |
+| `isFlaggedFraud = 1` | 16 |
+| Duplicate hoàn toàn / nhóm duplicate | 0 / 0 |
+| Dòng có balance âm | 0 |
+| Mismatch số dư nguồn / đích | 5.000.754 / 3.823.898 |
 
-| Loai | So dong | Ty le |
-|------|---------|-------|
-| Non-fraud (0) | 6.354.407 | 99.871% |
-| Fraud (1) | 8.213 | 0.129% |
+Không loại dữ liệu vì balance mismatch. PaySim là dữ liệu mô phỏng; số dư có thể không phản ánh một phép ghi sổ khép kín ở từng dòng. ETL nên giữ bản ghi gốc, lưu cờ chất lượng và các chênh lệch dẫn xuất để phân tích.
 
-**Mat can bang nhan nghiem trong.** Ti le fraud chi 0.129%.
+## 2. Theo loại giao dịch
 
-### 3.1. Fraud chi xuat hien o 2 loai giao dich
+| Type | Transaction count | Fraud count | Fraud rate trong type |
+|---|---:|---:|---:|
+| CASH_IN | 1.399.284 | 0 | 0,000% |
+| CASH_OUT | 2.237.500 | 4.116 | 0,184% |
+| DEBIT | 41.432 | 0 | 0,000% |
+| PAYMENT | 2.151.495 | 0 | 0,000% |
+| TRANSFER | 532.909 | 4.097 | 0,769% |
 
-| Type | Fraud count | Ty le fraud trong type |
-|------|-------------|------------------------|
-| TRANSFER | 4.097 | 0.769% |
-| CASH_OUT | 4.116 | 0.184% |
-| PAYMENT | 0 | 0% |
-| DEBIT | 0 | 0% |
-| CASH_IN | 0 | 0% |
+Fraud chỉ xuất hiện ở `TRANSFER` và `CASH_OUT`. `CASH_OUT` có fraud count cao hơn một chút, nhưng `TRANSFER` có fraud rate cao hơn; hai khái niệm không được dùng thay thế nhau.
 
-**Insight DW:** IsHighRiskType trong DimTransactionType = 1 cho TRANSFER va CASH_OUT.
-**Insight ETL:** Chi can flag high-risk khi type = TRANSFER hoac CASH_OUT.
-**Insight ML:** Feature engineering nen tap trung vao 2 loai nay.
+![Fraud theo type](figures/02_fraud_by_type.png)
 
-### 3.2. Pattern Full-Drain (so du bi vet sach)
+## 3. Theo thời gian
 
-- 8.024 / 8.213 giao dich fraud (97.7%) co pattern: oldbalanceOrg == amount AND newbalanceOrig == 0
-- Nguoi gian lan rut het toan bo so du tai khoan nguon
-- Day la feature manh nhat de phat hien fraud
+- Giờ có fraud count cao nhất: **9h**.
+- Giờ có fraud rate cao nhất: **4h**.
+- Ngày có fraud count cao nhất: **ngày 17**.
+- Ngày có fraud rate cao nhất: **ngày 31**; ngày này chỉ có 272 giao dịch và tất cả là fraud, nên không nên kết luận rủi ro chỉ từ rate mà không hiển thị transaction count.
 
-**Insight DW:** Them cot BalanceDropOrig = OldBalanceOrig - NewBalanceOrig vao FactTransaction.
+![Fraud theo giờ](figures/03_fraud_by_hour.png)
 
-### 3.3. isFlaggedFraud khong dang tin cay
+## 4. Theo amount
 
-- Chi co 16 dong duoc danh dau isFlaggedFraud = 1
-- Trong khi thuc te co 8.213 fraud
-- isFlaggedFraud la co bao dong nguon, KHONG dung lam ground truth
+| Amount band | Transaction count | Fraud count | Fraud rate |
+|---|---:|---:|---:|
+| XS | 142.642 | 58 | 0,041% |
+| S | 1.143.361 | 220 | 0,019% |
+| M | 2.239.253 | 1.429 | 0,064% |
+| L | 2.706.738 | 3.800 | 0,140% |
+| XL | 124.976 | 2.419 | 1,936% |
+| XXL | 5.650 | 287 | 5,080% |
 
-**Insight ETL:** Luu isFlaggedFraud vao staging va fact de tham khao, nhung khong dung lam nhan ML.
+- Tổng amount fraud: **12.056.415.427,84**, chiếm **1,054%** tổng amount.
+- XXL có fraud rate cao nhất, trong khi L có fraud count cao nhất. Dashboard phải trình bày đồng thời count, rate và mẫu số.
 
-## 4. Phan tich tai khoan (Account)
+![Phân phối amount](figures/04_amount_distribution.png)
 
-| Thong tin | Gia tri |
-|-----------|---------|
-| Unique nameOrig | 6.353.307 |
-| Unique nameDest | 2.722.362 |
-| nameOrig bat dau bang C | 100% (tat ca Customer) |
-| nameDest bat dau bang C | 4.211.125 (Customer) |
-| nameDest bat dau bang M | 2.151.495 (Merchant) |
-| nameOrig bat dau bang M | 0 (khong co Merchant o phia nguon) |
+## 5. Theo tài khoản
 
-**Insight DW:** AccountType = C hoac M lay tu ky tu dau cua nameOrig/nameDest.
-**Insight ETL:** Validate account ID bat buoc bat dau bang C hoac M.
-**Insight DW:** Merchant chi xuat hien o phia dich (nameDest), khong bao gio la nguon.
+- `nameOrig` phân biệt: **6.353.307**; `nameDest` phân biệt: **2.722.362**.
+- Toàn bộ 6.362.620 tài khoản nguồn mang prefix C; merchant không xuất hiện ở nguồn.
+- Ở đích: C = 4.211.125, M = 2.151.495; merchant chỉ xuất hiện ở đích.
+- Tài khoản nguồn xuất hiện nhiều nhất có 3 giao dịch; tài khoản đích đứng đầu là `C1286084959` với 113 giao dịch.
+- Mỗi nguồn fraud chỉ xuất hiện một lần; nhóm đích fraud cao nhất có 2 giao dịch fraud.
+- Fraud có `oldbalanceDest = 0`: **5.351/8.213 (65,153%)**. Đây là dấu hiệu đáng chú ý, chưa phải bằng chứng tài khoản mule nếu chưa có dữ liệu bổ sung.
 
-### 4.1. Fraud voi so du tai khoan dich = 0
+## 6. Theo balance
 
-- 5.351 / 8.213 giao dich fraud (65.2%) co oldbalanceDest = 0 truoc khi nhan tien
-- Dau hieu tai khoan dich la tai khoan gia/mule account
+- Full-drain (`abs(oldbalanceOrg - amount) < 0,01` và `newbalanceOrig = 0`): **8.024/8.213 (97,699%)** fraud.
+- `BalanceDropOrig = oldbalanceOrg - newbalanceOrig` và `BalanceChangeDest = newbalanceDest - oldbalanceDest` là trường dẫn xuất độc lập với nhãn; `isFraud` không được dùng làm đầu vào tạo feature.
+- Full-drain và `oldbalanceDest = 0` là các dấu hiệu đáng chú ý; chưa gọi là feature “mạnh nhất” khi chưa có phép đo so sánh trên mô hình/validation.
 
-**Insight ML:** oldbalanceDest = 0 khi nhan transfer la feature manh.
+![So sánh balance](figures/06_balance_patterns.png)
 
-## 5. Phan tich khoang tien (Amount Band)
+## 7. Ảnh hưởng triển khai
 
-| Band | Nhan | Khoang | So dong | Ty le |
-|------|------|--------|---------|-------|
-| XS | Rat nho | < 1.000 | 142.642 | 2.2% |
-| S | Nho | 1.000 - 9.999 | 1.143.361 | 18.0% |
-| M | Trung binh | 10.000 - 99.999 | 2.239.253 | 35.2% |
-| L | Lon | 100.000 - 999.999 | 2.706.738 | 42.5% |
-| XL | Rat lon | 1.000.000 - 9.999.999 | 124.976 | 2.0% |
-| XXL | Cuc lon | >= 10.000.000 | 5.650 | 0.1% |
-
-**Fraud amount max = 10.000.000** (gioi han cua PaySim).
-**Fraud amount tong = 12.056.415.427.84** don vi (1.05% tong amount).
-**Insight DW:** 6 bang amount band nay chinh xac cho DimAmountBand.
-
-## 6. Phan tich thoi gian (step)
-
-- step = 1 den 743 (thieu step 744 so voi mo phong 744 gio)
-- HourOfDay = (step - 1) % 24 : gio trong ngay (0-23)
-- StepDay = (step - 1) / 24 + 1 : ngay thu may (1-31)
-- Map sang ngay thuc tu 2023-01-01 theo cau hinh
-
-**Insight DW:** DimDate.DateKey = 20230101 + (StepDay - 1) ngay, DimTime.TimeKey = HourOfDay.
-
-## 7. Van de chat luong du lieu
-
-| Van de | Ket qua kiem tra | Danh gia |
-|--------|------------------|----------|
-| Null values | 0 | Tot |
-| Negative amount | 0 | Tot |
-| Invalid type domain | 0 | Tot |
-| Invalid isFraud values | 0 | Tot |
-| Balance mismatch (PAYMENT/TRANSFER) | 1.674.676 | Can luu y (*) |
-| Duplicate rows | Chua kiem tra day du | Can xac nhan |
-
-(*) Balance mismatch PAYMENT/TRANSFER: oldbalanceOrg - amount != newbalanceOrig cho 1.674.676 dong.
-Day la dac tinh cua du lieu mo phong PaySim, khong phai loi du lieu thuc.
-ETL van nap tat ca dong, luu BalanceDropOrig = OldBalanceOrig - NewBalanceOrig de tinh chinh xac.
-
-## 8. Ket luan va cac quyet dinh thiet ke
-
-| Quyet dinh | Ly do |
-|-----------|-------|
-| IsHighRiskType = 1 cho TRANSFER va CASH_OUT | Chi 2 type nay co fraud |
-| BalanceDropOrig la derived measure trong FactTransaction | Pattern full-drain la feature manh |
-| isFlaggedFraud luu vao staging/fact nhung KHONG dung lam nhan | Chi co 16, khong tin cay |
-| AccountType lay tu ky tu dau cua account ID | Nhat quan 100% trong du lieu |
-| Merchant chi la tai khoan dich, khong la nguon | 100% nameOrig bat dau bang C |
-| 6 amount bands: XS/S/M/L/XL/XXL | Phu hop phan phoi du lieu thuc |
-| ETL can validate: amount>=0, type in domain, isFraud in {0,1} | Dat chuan chat luong |
-| Balance mismatch KHONG loai don vi khi nap | La dac tinh du lieu mo phong |
+- **Data Warehouse:** lưu `HourOfDay`, `StepDay`, `AmountBand`, `AccountType`, `BalanceDropOrig`, `BalanceChangeDest`, `IsHighRiskType`; giữ nguyên balance gốc và cờ mismatch.
+- **ETL:** kiểm tra schema/domain/null/amount âm/account format; không loại bản ghi chỉ vì mismatch; reconciliation phải giữ đủ 6.362.620 dòng.
+- **ML:** chỉ dùng `isFraud` làm nhãn; `isFlaggedFraud` là thuộc tính nguồn; đánh giá feature bằng validation thay vì suy diễn từ EDA.
+- **Dashboard:** luôn hiển thị fraud count, fraud rate và transaction count; cảnh báo nhóm có mẫu số nhỏ.
