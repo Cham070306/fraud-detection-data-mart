@@ -217,9 +217,9 @@ Tài liệu này định nghĩa **từ điển các chỉ số KPI** (Key Perfor
 
 | Mục | Chi tiết |
 |-----|---------|
-| **Tên đầy đủ** | Tỷ lệ cảnh báo nhầm theo mức rủi ro |
-| **Mô tả** | Trong số giao dịch được cảnh báo ở từng mức rủi ro, bao nhiêu phần trăm thực tế là hợp lệ (không gian lận) |
-| **Công thức** | `COUNT(AlertKey WHERE is_fraud=0) / COUNT(AlertKey) × 100` — nhóm theo `risk_level` |
+| **Tên đầy đủ** | Tỷ lệ cảnh báo nhầm theo mức rủi ro (HIGH / CRITICAL) |
+| **Mô tả** | Trong số giao dịch được cảnh báo ở từng mức rủi ro (**chỉ HIGH và CRITICAL trong `FactAlert`**), bao nhiêu phần trăm thực tế là hợp lệ (không gian lận) |
+| **Công thức** | `COUNT(AlertKey WHERE is_fraud=0) / COUNT(AlertKey) × 100` — nhóm theo `alert_level` (HIGH, CRITICAL) |
 | **Đơn vị** | % |
 | **Nguồn** | `fact.FactAlert` JOIN `fact.FactTransaction` JOIN `dim.DimRiskPolicy` |
 | **View SQL** | `vw_AlertSummary` |
@@ -288,3 +288,4 @@ Tài liệu này định nghĩa **từ điển các chỉ số KPI** (Key Perfor
 | v1.0 | 2026-08-09 | TV1 | Khởi tạo KPI Dictionary |
 | v1.1 | 2026-08-10 | TV1 | Fix P1-1: chuẩn hóa View SQL — KPI-A01 đổi sang `vw_ModelPerformance`; thêm `View SQL: vw_ETLQuality` vào KPI-Q01/Q02; sửa công thức KPI-Q01 xử lý rejected rows |
 | v1.2 | 2026-08-10 | TV1 | Fix P1-2: KPI-A02 sửa mô tả từ "4 mức" → "2 mức (HIGH, CRITICAL)"; sửa công thức GROUP BY alert_level thay vì risk_level |
+| v1.3 | 2026-08-10 | TV1 | Cập nhật BQ-07 & KPI-A03 theo chỉ đạo mới: khẳng định rõ ràng chỉ phân tích 2 mức cảnh báo HIGH và CRITICAL trong `FactAlert` |

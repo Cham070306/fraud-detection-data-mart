@@ -1,0 +1,19 @@
+﻿# configs/app.yaml.example
+# Copy thanh configs/app.yaml va cap nhat theo moi truong cua ban
+# Phan Khai (TV2)
+
+# Duong dan file CSV PaySim (dat trong data/raw/)
+paysim_file: "data/raw/PS_20174392719_1491204439457_log.csv"
+
+# So dong moi chunk khi doc CSV (giam neu thieu RAM)
+chunk_size: 200000
+
+# Ngay bat dau simulation (step 1 = ngay nay)
+start_date: "2023-01-01"
+
+# Database settings (co the dung .env thay the)
+database:
+  server: "localhost"
+  name: "FraudDW"
+  driver: "ODBC Driver 17 for SQL Server"
+  trusted_connection: true

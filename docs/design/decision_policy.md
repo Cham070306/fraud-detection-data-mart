@@ -109,9 +109,11 @@ policy_version: "v1.0"
 effective_date: "2026-08-09"
 
 # QUY ƯỚC RANH GIỚI (Boundary Rule):
-#   score_min ≤ fraud_score < score_max  → mức thấp hơn [inclusive min, exclusive max]
+#   score_min ≤ fraud_score < score_max  → áp dụng cho LOW, MEDIUM, HIGH
 #   Riêng CRITICAL: score_min ≤ fraud_score ≤ 1.00  → inclusive cả 2 đầu
-#   Ví dụ: score = 0.30 thuộc MEDIUM, không thuộc LOW
+#   Ví dụ: score = 0.30 → thuộc MEDIUM (không phải LOW)
+#          score = 0.60 → thuộc HIGH (không phải MEDIUM)
+#          score = 0.85 → thuộc CRITICAL (không phải HIGH)
 risk_levels:
   - level: "LOW"
     score_min: 0.00        # ≥ 0.00 (inclusive)
@@ -233,3 +235,4 @@ Giao dịch mới
 |-----------|------|----------------|-------------------|
 | v1.0 | 2026-08-09 | TV1 | Khởi tạo Decision Policy |
 | v1.1 | 2026-08-10 | TV1 | Fix P1-5a: thay thế "APPROVE/REJECT" bằng các giá trị `AlertStatus` đúng (RESOLVED, FALSE_POSITIVE, IN_REVIEW); Fix P1-5b: thêm Boundary Rule rõ ràng vào YAML snippet §4 ([inclusive min, exclusive max]) |
+| v1.2 | 2026-08-10 | TV1 | Fix P1-6: đồng bộ snippet YAML §4 với `configs/risk_policy.yaml` thực tế (thêm `alert_level` cho HIGH/CRITICAL, bổ sung ví dụ boundary) |

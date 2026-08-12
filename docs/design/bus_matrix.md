@@ -273,7 +273,7 @@ Dimensions chung:
 | BQ-04: Pattern số dư bất thường | FactTransaction | DimAccount | `vw_FraudAnalysis` |
 | BQ-05: Model Performance | FactModelScore | DimModelVersion | `vw_ModelPerformance` |
 | BQ-06: Captured Fraud Loss | FactModelScore + FactTransaction | DimModelVersion | `vw_ModelPerformance` |
-| BQ-07: Alert by Risk Level | FactAlert | DimRiskPolicy | `vw_AlertSummary` |
+| BQ-07: Alert by Risk Level (HIGH/CRITICAL) | FactAlert | DimRiskPolicy | `vw_AlertSummary` |
 | BQ-08: ETL Reconciliation | stg.raw_paysim + FactTransaction | — | `vw_ETLQuality` |
 
 ---
@@ -286,3 +286,4 @@ Dimensions chung:
 | v1.1 | 2026-08-09 | TV1 | Fix §2 Bus Matrix: bỏ ✅ sai trên FactModelScore/FactAlert; xoá aggregate columns khỏi DimAccount; clarify TimeSlot boundary; thêm TODO cho RiskWeight; thêm disclaimer dữ liệu mô phỏng |
 | v1.2 | 2026-08-10 | TV1 | Fix M1: xóa tham chiếu sai đến decision_policy.md trong §2; Fix M2: đổi tên TimeSlot NIGHT [22,24) → LATE_NIGHT để tránh trùng tên gây lỗi INSERT vào DimTime |
 | v1.3 | 2026-08-10 | TV1 | Fix P1-1: chuẩn hóa bộ tên BI Views §6 về 5 views thống nhất (vw_TransactionSummary, vw_FraudAnalysis, vw_ModelPerformance, vw_AlertSummary, vw_ETLQuality) — xóa bỏ các tên phân mảnh vw_FraudByType/Time/Amount, vw_BalanceAnalysis; sửa BQ-06 vào vw_ModelPerformance |
+| v1.4 | 2026-08-10 | TV1 | Cập nhật BQ-07 §6: khẳng định chỉ phân tích cảnh báo HIGH và CRITICAL |

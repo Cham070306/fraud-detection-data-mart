@@ -63,14 +63,15 @@ Dataset PaySim mô phỏng **6.362.620 giao dịch** trong 30 ngày với **8.21
 ## 5. Phạm vi Dự án (Scope)
 
 ### 5.1 Trong phạm vi (In Scope)
-- [x] Data Mart Star Schema (SQL Server): Staging, Dimensions, Facts, BI Views.
-- [x] ETL Pipeline: Extract từ CSV, Transform/Validate, Load theo chunk.
-- [x] Data Quality & Reconciliation.
-- [x] Feature Engineering từ dữ liệu giao dịch PaySim.
-- [x] Huấn luyện & tối ưu ngưỡng mô hình ML (LightGBM/Random Forest).
-- [x] Scoring giao dịch và phân loại rủi ro theo policy.
-- [x] Power BI Dashboard (5 trang: Overview, Transaction Analysis, Model Performance, Alert Queue, ETL Quality).
-- [x] Streamlit Alert Queue Application.
+> **Ghi chú trạng thái:** Các mục đánh dấu `[ ]` là **đang triển khai** — hiện chỉ mới có khung file (0 bytes), chưa có code / SQL / Dashboard hoạt động. Mục nào hoàn thành sẽ được đánh dấu `[x]` kèm bằng chứng.
+- [ ] Data Mart Star Schema (SQL Server): Staging, Dimensions, Facts, BI Views.
+- [ ] ETL Pipeline: Extract từ CSV, Transform/Validate, Load theo chunk.
+- [ ] Data Quality & Reconciliation.
+- [ ] Feature Engineering từ dữ liệu giao dịch PaySim.
+- [ ] Huấn luyện & tối ưu ngưỡng mô hình ML (LightGBM/Random Forest).
+- [ ] Scoring giao dịch và phân loại rủi ro theo policy.
+- [ ] Power BI Dashboard (5 trang: Overview, Transaction Analysis, Model Performance, Alert Queue, ETL Quality).
+- [ ] Streamlit Alert Queue Application.
 - [x] Tài liệu đầy đủ (7 file bàn giao của TV1).
 
 ### 5.2 Ngoài phạm vi (Out of Scope)
@@ -103,12 +104,13 @@ CSV (PaySim.csv)
 [STAGING Layer]         ← SQL Server: stg.raw_paysim
       │ ETL Transform + Validate
       ▼
-[DIMENSION Tables]      ← dim.DimDate, DimTime, DimTransactionType,
-      │                    DimAccount, DimAmountBand, DimRiskPolicy, DimModelVersion
+[DIMENSION Tables]      ← dim.DimDate, dim.DimTime, dim.DimTransactionType,
+      │                    dim.DimAccount, dim.DimAmountBand, dim.DimRiskPolicy, dim.DimModelVersion
       ▼
-[FACT Tables]           ← fact.FactTransaction, FactModelScore, FactAlert
+[FACT Tables]           ← fact.FactTransaction, fact.FactModelScore, fact.FactAlert
       │
-      ├──► [BI VIEWS]          ← vw.TransactionSummary, FraudAnalysis, ModelPerf...
+      ├──► [BI VIEWS]          ← vw_TransactionSummary, vw_FraudAnalysis, vw_ModelPerformance,
+      │                           vw_AlertSummary, vw_ETLQuality
       │         │
       │         ├──► Power BI Dashboard (5 pages)
       │         └──► Streamlit Alert Queue App
@@ -149,3 +151,6 @@ CSV (PaySim.csv)
 | Phiên bản | Ngày | Người cập nhật | Nội dung thay đổi |
 |-----------|------|----------------|-------------------|
 | v1.0 | 2026-08-09 | TV1 | Khởi tạo Project Charter |
+| v1.1 | 2026-08-10 | TV1 | Fix §5.1: đổi 8 mục `[x]` không có bằng chứng (file trong `sql/`, `src/`, `scripts/`, `notebooks/`, `dashboard/` còn trống 0 bytes) → `[ ]` (Đang triển khai); giữ `[x]` duy nhất cho mục Tài liệu TV1 (đã có nội dung) |
+| v1.2 | 2026-08-10 | TV1 | Fix §7: chuẩn hóa tên BI Views trong sơ đồ kiến trúc về 5 views thống nhất (`vw_TransactionSummary`, `vw_FraudAnalysis`, `vw_ModelPerformance`, `vw_AlertSummary`, `vw_ETLQuality`) — đồng bộ với Bus Matrix v1.3 |
+| v1.3 | 2026-08-10 | TV1 | Fix §7: thống nhất prefix schema (`dim.` / `fact.`) cho toàn bộ tên bảng trong sơ đồ kiến trúc |
