@@ -12,6 +12,9 @@ pytest>=7.0.0
 
 # Data processing
 openpyxl>=3.1.0  # For Excel export
+matplotlib>=3.8.0  # EDA charts
+seaborn>=0.13.0  # EDA visualizations
+jupyter>=1.0.0  # Execute and preserve notebook outputs
 
 # Logging (built-in, no external package needed)
 

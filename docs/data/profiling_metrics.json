@@ -1,0 +1,38 @@
+{
+  "source": "PS_20174392719_1491204439457_log.csv",
+  "run_date": "2026-08-12",
+  "rows": 6362620,
+  "columns": 11,
+  "total_amount": 1144392944759.77,
+  "fraud": 8213,
+  "flagged": 16,
+  "duplicate_rows": 0,
+  "duplicate_groups": 0,
+  "negative_balance_rows": 0,
+  "origin_balance_mismatch": 5000754,
+  "destination_balance_mismatch": 3823898,
+  "orig_prefix": {
+    "C": 6362620
+  },
+  "dest_prefix": {
+    "C": 4211125,
+    "M": 2151495
+  },
+  "domains": {
+    "type": [
+      "CASH_IN",
+      "CASH_OUT",
+      "DEBIT",
+      "PAYMENT",
+      "TRANSFER"
+    ],
+    "isFraud": [
+      0,
+      1
+    ],
+    "isFlaggedFraud": [
+      0,
+      1
+    ]
+  }
+}

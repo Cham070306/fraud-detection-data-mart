@@ -38,10 +38,10 @@
 
 | Câu hỏi Nghiệp vụ | Kết quả Phát hiện |
 |---|---|
-| BQ-01: Fraud theo loại GD | *[TODO: Loại nào chiếm tỷ lệ cao nhất?]* |
-| BQ-02: Fraud theo thời gian | *[TODO: Giờ cao điểm?]* |
-| BQ-03: Fraud theo khoảng tiền | *[TODO: Amount Band nào?]* |
-| BQ-04: Pattern số dư | *[TODO: Quan sát nổi bật?]* |
+| BQ-01: Fraud theo loại GD | TRANSFER có fraud rate cao nhất (0,769%); CASH_OUT có fraud count cao nhất (4.116). |
+| BQ-02: Fraud theo thời gian | Fraud count cao nhất lúc 9h; fraud rate cao nhất lúc 4h (cần đọc cùng transaction count). |
+| BQ-03: Fraud theo khoảng tiền | L có fraud count cao nhất; XXL có fraud rate cao nhất (5,080%). |
+| BQ-04: Pattern số dư | Full-drain xuất hiện ở 8.024/8.213 fraud (97,699%); không loại balance mismatch. |
 
 ### 2.3 Mô hình Machine Learning (TV4 — ML Engineer)
 
@@ -72,7 +72,7 @@
 | KPI | Mục tiêu | Kết quả |
 |-----|---------|---------|
 | ETL Reconciliation Rate | = 100% | *[TODO]* |
-| Fraud Rate (Volume) | ~0.13% (verify) | *[TODO]* |
+| Fraud Rate (Volume) | ~0.13% (verify) | 0,129% (8.213/6.362.620) |
 | Recall | ≥ 80% | *[TODO]* |
 | F2-Score | ≥ 0.70 | *[TODO]* |
 | Captured Fraud Loss Rate | Tối đa | *[TODO]* |
