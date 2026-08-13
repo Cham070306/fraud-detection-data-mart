@@ -1,0 +1,145 @@
+SO SÁNH DW vs EDA
+============================================================
+[PASS] Tổng số dòng: actual=6362620 expected=6362620
+[PASS] Số giao dịch fraud: actual=8213 expected=8213
+[PASS] Tổng Amount: actual=1144392944759.77 expected=1144392944759.77
+[PASS] Tổng Fraud Amount: actual=12056415427.84 expected=12056415427.84
+[PASS] Fraud rate: actual=0.001290820448180152 expected=0.001290820448180152
+[PASS]   CASH_IN - count: actual=1399284 expected=1399284
+[PASS]   CASH_IN - fraud: actual=0 expected=0
+[PASS]   CASH_OUT - count: actual=2237500 expected=2237500
+[PASS]   CASH_OUT - fraud: actual=4116 expected=4116
+[PASS]   DEBIT - count: actual=41432 expected=41432
+[PASS]   DEBIT - fraud: actual=0 expected=0
+[PASS]   PAYMENT - count: actual=2151495 expected=2151495
+[PASS]   PAYMENT - fraud: actual=0 expected=0
+[PASS]   TRANSFER - count: actual=532909 expected=532909
+[PASS]   TRANSFER - fraud: actual=4097 expected=4097
+[PASS]   XS - count: actual=142642 expected=142642
+[PASS]   XS - fraud: actual=58 expected=58
+[PASS]   S - count: actual=1143361 expected=1143361
+[PASS]   S - fraud: actual=220 expected=220
+[PASS]   M - count: actual=2239253 expected=2239253
+[PASS]   M - fraud: actual=1429 expected=1429
+[PASS]   L - count: actual=2706738 expected=2706738
+[PASS]   L - fraud: actual=3800 expected=3800
+[PASS]   XL - count: actual=124976 expected=124976
+[PASS]   XL - fraud: actual=2419 expected=2419
+[PASS]   XXL - count: actual=5650 expected=5650
+[PASS]   XXL - fraud: actual=287 expected=287
+[PASS]   Hour 0 - count: actual=27111 expected=27111
+[PASS]   Hour 0 - fraud: actual=358 expected=358
+[PASS]   Hour 1 - count: actual=9018 expected=9018
+[PASS]   Hour 1 - fraud: actual=372 expected=372
+[PASS]   Hour 2 - count: actual=2007 expected=2007
+[PASS]   Hour 2 - fraud: actual=326 expected=326
+[PASS]   Hour 3 - count: actual=1241 expected=1241
+[PASS]   Hour 3 - fraud: actual=274 expected=274
+[PASS]   Hour 4 - count: actual=1641 expected=1641
+[PASS]   Hour 4 - fraud: actual=366 expected=366
+[PASS]   Hour 5 - count: actual=3420 expected=3420
+[PASS]   Hour 5 - fraud: actual=358 expected=358
+[PASS]   Hour 6 - count: actual=8988 expected=8988
+[PASS]   Hour 6 - fraud: actual=328 expected=328
+[PASS]   Hour 7 - count: actual=26915 expected=26915
+[PASS]   Hour 7 - fraud: actual=368 expected=368
+[PASS]   Hour 8 - count: actual=283518 expected=283518
+[PASS]   Hour 8 - fraud: actual=341 expected=341
+[PASS]   Hour 9 - count: actual=425729 expected=425729
+[PASS]   Hour 9 - fraud: actual=375 expected=375
+[PASS]   Hour 10 - count: actual=445992 expected=445992
+[PASS]   Hour 10 - fraud: actual=324 expected=324
+[PASS]   Hour 11 - count: actual=483418 expected=483418
+[PASS]   Hour 11 - fraud: actual=339 expected=339
+[PASS]   Hour 12 - count: actual=468474 expected=468474
+[PASS]   Hour 12 - fraud: actual=346 expected=346
+[PASS]   Hour 13 - count: actual=439653 expected=439653
+[PASS]   Hour 13 - fraud: actual=353 expected=353
+[PASS]   Hour 14 - count: actual=416686 expected=416686
+[PASS]   Hour 14 - fraud: actual=341 expected=341
+[PASS]   Hour 15 - count: actual=441612 expected=441612
+[PASS]   Hour 15 - fraud: actual=345 expected=345
+[PASS]   Hour 16 - count: actual=439941 expected=439941
+[PASS]   Hour 16 - fraud: actual=353 expected=353
+[PASS]   Hour 17 - count: actual=580509 expected=580509
+[PASS]   Hour 17 - fraud: actual=343 expected=343
+[PASS]   Hour 18 - count: actual=647814 expected=647814
+[PASS]   Hour 18 - fraud: actual=342 expected=342
+[PASS]   Hour 19 - count: actual=553728 expected=553728
+[PASS]   Hour 19 - fraud: actual=340 expected=340
+[PASS]   Hour 20 - count: actual=247806 expected=247806
+[PASS]   Hour 20 - fraud: actual=347 expected=347
+[PASS]   Hour 21 - count: actual=194555 expected=194555
+[PASS]   Hour 21 - fraud: actual=351 expected=351
+[PASS]   Hour 22 - count: actual=141257 expected=141257
+[PASS]   Hour 22 - fraud: actual=323 expected=323
+[PASS]   Hour 23 - count: actual=71587 expected=71587
+[PASS]   Hour 23 - fraud: actual=300 expected=300
+[PASS]   Tổng hour mismatches: actual=0 expected=0
+[PASS]   Day 1 - count: actual=574255 expected=574255
+[PASS]   Day 1 - fraud: actual=271 expected=271
+[PASS]   Day 2 - count: actual=455238 expected=455238
+[PASS]   Day 2 - fraud: actual=309 expected=309
+[PASS]   Day 3 - count: actual=1070 expected=1070
+[PASS]   Day 3 - fraud: actual=310 expected=310
+[PASS]   Day 4 - count: actual=28240 expected=28240
+[PASS]   Day 4 - fraud: actual=262 expected=262
+[PASS]   Day 5 - count: actual=9789 expected=9789
+[PASS]   Day 5 - fraud: actual=252 expected=252
+[PASS]   Day 6 - count: actual=441005 expected=441005
+[PASS]   Day 6 - fraud: actual=228 expected=228
+[PASS]   Day 7 - count: actual=420583 expected=420583
+[PASS]   Day 7 - fraud: actual=272 expected=272
+[PASS]   Day 8 - count: actual=449637 expected=449637
+[PASS]   Day 8 - fraud: actual=278 expected=278
+[PASS]   Day 9 - count: actual=417919 expected=417919
+[PASS]   Day 9 - fraud: actual=255 expected=255
+[PASS]   Day 10 - count: actual=392945 expected=392945
+[PASS]   Day 10 - fraud: actual=282 expected=282
+[PASS]   Day 11 - count: actual=417859 expected=417859
+[PASS]   Day 11 - fraud: actual=262 expected=262
+[PASS]   Day 12 - count: actual=349776 expected=349776
+[PASS]   Day 12 - fraud: actual=298 expected=298
+[PASS]   Day 13 - count: actual=428583 expected=428583
+[PASS]   Day 13 - fraud: actual=242 expected=242
+[PASS]   Day 14 - count: actual=397876 expected=397876
+[PASS]   Day 14 - fraud: actual=246 expected=246
+[PASS]   Day 15 - count: actual=401282 expected=401282
+[PASS]   Day 15 - fraud: actual=250 expected=250
+[PASS]   Day 16 - count: actual=375594 expected=375594
+[PASS]   Day 16 - fraud: actual=252 expected=252
+[PASS]   Day 17 - count: actual=425766 expected=425766
+[PASS]   Day 17 - fraud: actual=320 expected=320
+[PASS]   Day 18 - count: actual=20999 expected=20999
+[PASS]   Day 18 - fraud: actual=268 expected=268
+[PASS]   Day 19 - count: actual=11300 expected=11300
+[PASS]   Day 19 - fraud: actual=256 expected=256
+[PASS]   Day 20 - count: actual=19727 expected=19727
+[PASS]   Day 20 - fraud: actual=236 expected=236
+[PASS]   Day 21 - count: actual=24593 expected=24593
+[PASS]   Day 21 - fraud: actual=272 expected=272
+[PASS]   Day 22 - count: actual=53437 expected=53437
+[PASS]   Day 22 - fraud: actual=256 expected=256
+[PASS]   Day 23 - count: actual=51012 expected=51012
+[PASS]   Day 23 - fraud: actual=216 expected=216
+[PASS]   Day 24 - count: actual=32709 expected=32709
+[PASS]   Day 24 - fraud: actual=280 expected=280
+[PASS]   Day 25 - count: actual=57853 expected=57853
+[PASS]   Day 25 - fraud: actual=240 expected=240
+[PASS]   Day 26 - count: actual=13885 expected=13885
+[PASS]   Day 26 - fraud: actual=272 expected=272
+[PASS]   Day 27 - count: actual=8578 expected=8578
+[PASS]   Day 27 - fraud: actual=280 expected=280
+[PASS]   Day 28 - count: actual=14661 expected=14661
+[PASS]   Day 28 - fraud: actual=248 expected=248
+[PASS]   Day 29 - count: actual=54890 expected=54890
+[PASS]   Day 29 - fraud: actual=260 expected=260
+[PASS]   Day 30 - count: actual=11287 expected=11287
+[PASS]   Day 30 - fraud: actual=268 expected=268
+[PASS]   Day 31 - count: actual=272 expected=272
+[PASS]   Day 31 - fraud: actual=272 expected=272
+[PASS]   Tổng day mismatches: actual=0 expected=0
+[PASS] FlaggedFraud count: actual=16 expected=16
+[FAIL] Full drain fraud (BalanceDropOrig = OldBalanceOrig): actual=8012 expected=8024
+
+TOTAL: 140/141 PASS, 1/141 FAIL

@@ -1,0 +1,599 @@
+{
+  "source": "PS_20174392719_1491204439457_log.csv",
+  "run_date": "2026-08-12",
+  "rows": 6362620,
+  "fraud": 8213,
+  "fraud_rate": 0.001290820448180152,
+  "total_amount": 1144392944759.77,
+  "fraud_amount": 12056415427.84,
+  "fraud_amount_share": 0.010535206008606487,
+  "unique_orig": 6353307,
+  "unique_dest": 2722362,
+  "orig_prefix": {
+    "C": 6362620
+  },
+  "dest_prefix": {
+    "C": 4211125,
+    "M": 2151495
+  },
+  "top_orig": [
+    [
+      "C2098525306",
+      3
+    ],
+    [
+      "C400299098",
+      3
+    ],
+    [
+      "C1999539787",
+      3
+    ],
+    [
+      "C1065307291",
+      3
+    ],
+    [
+      "C545315117",
+      3
+    ],
+    [
+      "C1976208114",
+      3
+    ],
+    [
+      "C1784010646",
+      3
+    ],
+    [
+      "C1530544995",
+      3
+    ],
+    [
+      "C1902386530",
+      3
+    ],
+    [
+      "C1677795071",
+      3
+    ]
+  ],
+  "top_dest": [
+    [
+      "C1286084959",
+      113
+    ],
+    [
+      "C985934102",
+      109
+    ],
+    [
+      "C665576141",
+      105
+    ],
+    [
+      "C2083562754",
+      102
+    ],
+    [
+      "C248609774",
+      101
+    ],
+    [
+      "C1590550415",
+      101
+    ],
+    [
+      "C451111351",
+      99
+    ],
+    [
+      "C1789550256",
+      99
+    ],
+    [
+      "C1360767589",
+      98
+    ],
+    [
+      "C1023714065",
+      97
+    ]
+  ],
+  "top_fraud_orig": [
+    [
+      "C1305486145",
+      1
+    ],
+    [
+      "C840083671",
+      1
+    ],
+    [
+      "C1420196421",
+      1
+    ],
+    [
+      "C2101527076",
+      1
+    ],
+    [
+      "C137533655",
+      1
+    ],
+    [
+      "C1118430673",
+      1
+    ],
+    [
+      "C749981943",
+      1
+    ],
+    [
+      "C1334405552",
+      1
+    ],
+    [
+      "C467632528",
+      1
+    ],
+    [
+      "C1364127192",
+      1
+    ]
+  ],
+  "top_fraud_dest": [
+    [
+      "C410033330",
+      2
+    ],
+    [
+      "C803116137",
+      2
+    ],
+    [
+      "C904300960",
+      2
+    ],
+    [
+      "C1013511446",
+      2
+    ],
+    [
+      "C2020337583",
+      2
+    ],
+    [
+      "C200064275",
+      2
+    ],
+    [
+      "C185805228",
+      2
+    ],
+    [
+      "C52390890",
+      2
+    ],
+    [
+      "C935310781",
+      2
+    ],
+    [
+      "C1827219533",
+      2
+    ]
+  ],
+  "old_dest_zero_fraud": 5351,
+  "old_dest_zero_fraud_rate": 0.6515280652623889,
+  "full_drain_fraud": 8024,
+  "full_drain_fraud_rate": 0.9769877024229879,
+  "max_fraud_count_hour": 9,
+  "max_fraud_rate_hour": 4,
+  "max_fraud_count_day": 17,
+  "max_fraud_rate_day": 31,
+  "by_type": [
+    {
+      "type": "CASH_IN",
+      "transaction_count": 1399284,
+      "fraud_count": 0,
+      "fraud_rate": 0.0
+    },
+    {
+      "type": "CASH_OUT",
+      "transaction_count": 2237500,
+      "fraud_count": 4116,
+      "fraud_rate": 0.0018395530726256983
+    },
+    {
+      "type": "DEBIT",
+      "transaction_count": 41432,
+      "fraud_count": 0,
+      "fraud_rate": 0.0
+    },
+    {
+      "type": "PAYMENT",
+      "transaction_count": 2151495,
+      "fraud_count": 0,
+      "fraud_rate": 0.0
+    },
+    {
+      "type": "TRANSFER",
+      "transaction_count": 532909,
+      "fraud_count": 4097,
+      "fraud_rate": 0.007687991758442811
+    }
+  ],
+  "by_hour": [
+    {
+      "HourOfDay": 0,
+      "transaction_count": 27111,
+      "fraud_count": 358,
+      "fraud_rate": 0.013204972151525211
+    },
+    {
+      "HourOfDay": 1,
+      "transaction_count": 9018,
+      "fraud_count": 372,
+      "fraud_rate": 0.04125083166999335
+    },
+    {
+      "HourOfDay": 2,
+      "transaction_count": 2007,
+      "fraud_count": 326,
+      "fraud_rate": 0.16243148978574987
+    },
+    {
+      "HourOfDay": 3,
+      "transaction_count": 1241,
+      "fraud_count": 274,
+      "fraud_rate": 0.22078968573730862
+    },
+    {
+      "HourOfDay": 4,
+      "transaction_count": 1641,
+      "fraud_count": 366,
+      "fraud_rate": 0.2230347349177331
+    },
+    {
+      "HourOfDay": 5,
+      "transaction_count": 3420,
+      "fraud_count": 358,
+      "fraud_rate": 0.10467836257309941
+    },
+    {
+      "HourOfDay": 6,
+      "transaction_count": 8988,
+      "fraud_count": 328,
+      "fraud_rate": 0.03649310191366266
+    },
+    {
+      "HourOfDay": 7,
+      "transaction_count": 26915,
+      "fraud_count": 368,
+      "fraud_rate": 0.013672673230540592
+    },
+    {
+      "HourOfDay": 8,
+      "transaction_count": 283518,
+      "fraud_count": 341,
+      "fraud_rate": 0.0012027455046945872
+    },
+    {
+      "HourOfDay": 9,
+      "transaction_count": 425729,
+      "fraud_count": 375,
+      "fraud_rate": 0.0008808420380100957
+    },
+    {
+      "HourOfDay": 10,
+      "transaction_count": 445992,
+      "fraud_count": 324,
+      "fraud_rate": 0.0007264704299628692
+    },
+    {
+      "HourOfDay": 11,
+      "transaction_count": 483418,
+      "fraud_count": 339,
+      "fraud_rate": 0.0007012564695563673
+    },
+    {
+      "HourOfDay": 12,
+      "transaction_count": 468474,
+      "fraud_count": 346,
+      "fraud_rate": 0.0007385682022908422
+    },
+    {
+      "HourOfDay": 13,
+      "transaction_count": 439653,
+      "fraud_count": 353,
+      "fraud_rate": 0.0008029059280841937
+    },
+    {
+      "HourOfDay": 14,
+      "transaction_count": 416686,
+      "fraud_count": 341,
+      "fraud_rate": 0.0008183620280019007
+    },
+    {
+      "HourOfDay": 15,
+      "transaction_count": 441612,
+      "fraud_count": 345,
+      "fraud_rate": 0.0007812287709573109
+    },
+    {
+      "HourOfDay": 16,
+      "transaction_count": 439941,
+      "fraud_count": 353,
+      "fraud_rate": 0.0008023803191791627
+    },
+    {
+      "HourOfDay": 17,
+      "transaction_count": 580509,
+      "fraud_count": 343,
+      "fraud_rate": 0.0005908607790749153
+    },
+    {
+      "HourOfDay": 18,
+      "transaction_count": 647814,
+      "fraud_count": 342,
+      "fraud_rate": 0.0005279293130435587
+    },
+    {
+      "HourOfDay": 19,
+      "transaction_count": 553728,
+      "fraud_count": 340,
+      "fraud_rate": 0.0006140198797965788
+    },
+    {
+      "HourOfDay": 20,
+      "transaction_count": 247806,
+      "fraud_count": 347,
+      "fraud_rate": 0.0014002889356997006
+    },
+    {
+      "HourOfDay": 21,
+      "transaction_count": 194555,
+      "fraud_count": 351,
+      "fraud_rate": 0.001804117087712986
+    },
+    {
+      "HourOfDay": 22,
+      "transaction_count": 141257,
+      "fraud_count": 323,
+      "fraud_rate": 0.002286612344874944
+    },
+    {
+      "HourOfDay": 23,
+      "transaction_count": 71587,
+      "fraud_count": 300,
+      "fraud_rate": 0.004190705016273904
+    }
+  ],
+  "by_day": [
+    {
+      "StepDay": 1,
+      "transaction_count": 574255,
+      "fraud_count": 271,
+      "fraud_rate": 0.00047191578654082243
+    },
+    {
+      "StepDay": 2,
+      "transaction_count": 455238,
+      "fraud_count": 309,
+      "fraud_rate": 0.0006787658323777892
+    },
+    {
+      "StepDay": 3,
+      "transaction_count": 1070,
+      "fraud_count": 310,
+      "fraud_rate": 0.2897196261682243
+    },
+    {
+      "StepDay": 4,
+      "transaction_count": 28240,
+      "fraud_count": 262,
+      "fraud_rate": 0.009277620396600567
+    },
+    {
+      "StepDay": 5,
+      "transaction_count": 9789,
+      "fraud_count": 252,
+      "fraud_rate": 0.025743181121667177
+    },
+    {
+      "StepDay": 6,
+      "transaction_count": 441005,
+      "fraud_count": 228,
+      "fraud_rate": 0.0005170009410324146
+    },
+    {
+      "StepDay": 7,
+      "transaction_count": 420583,
+      "fraud_count": 272,
+      "fraud_rate": 0.0006467213368110456
+    },
+    {
+      "StepDay": 8,
+      "transaction_count": 449637,
+      "fraud_count": 278,
+      "fraud_rate": 0.0006182765208379204
+    },
+    {
+      "StepDay": 9,
+      "transaction_count": 417919,
+      "fraud_count": 255,
+      "fraud_rate": 0.0006101660848154786
+    },
+    {
+      "StepDay": 10,
+      "transaction_count": 392945,
+      "fraud_count": 282,
+      "fraud_rate": 0.000717657687462622
+    },
+    {
+      "StepDay": 11,
+      "transaction_count": 417859,
+      "fraud_count": 262,
+      "fraud_rate": 0.0006270057603162789
+    },
+    {
+      "StepDay": 12,
+      "transaction_count": 349776,
+      "fraud_count": 298,
+      "fraud_rate": 0.0008519738346827684
+    },
+    {
+      "StepDay": 13,
+      "transaction_count": 428583,
+      "fraud_count": 242,
+      "fraud_rate": 0.0005646514210782976
+    },
+    {
+      "StepDay": 14,
+      "transaction_count": 397876,
+      "fraud_count": 246,
+      "fraud_rate": 0.0006182830831716414
+    },
+    {
+      "StepDay": 15,
+      "transaction_count": 401282,
+      "fraud_count": 250,
+      "fraud_rate": 0.0006230032745052108
+    },
+    {
+      "StepDay": 16,
+      "transaction_count": 375594,
+      "fraud_count": 252,
+      "fraud_rate": 0.0006709372354190961
+    },
+    {
+      "StepDay": 17,
+      "transaction_count": 425766,
+      "fraud_count": 320,
+      "fraud_rate": 0.0007515865522376141
+    },
+    {
+      "StepDay": 18,
+      "transaction_count": 20999,
+      "fraud_count": 268,
+      "fraud_rate": 0.012762512500595267
+    },
+    {
+      "StepDay": 19,
+      "transaction_count": 11300,
+      "fraud_count": 256,
+      "fraud_rate": 0.02265486725663717
+    },
+    {
+      "StepDay": 20,
+      "transaction_count": 19727,
+      "fraud_count": 236,
+      "fraud_rate": 0.01196329903178385
+    },
+    {
+      "StepDay": 21,
+      "transaction_count": 24593,
+      "fraud_count": 272,
+      "fraud_rate": 0.01106005774000732
+    },
+    {
+      "StepDay": 22,
+      "transaction_count": 53437,
+      "fraud_count": 256,
+      "fraud_rate": 0.0047906881000056144
+    },
+    {
+      "StepDay": 23,
+      "transaction_count": 51012,
+      "fraud_count": 216,
+      "fraud_rate": 0.004234297812279464
+    },
+    {
+      "StepDay": 24,
+      "transaction_count": 32709,
+      "fraud_count": 280,
+      "fraud_rate": 0.008560335075972973
+    },
+    {
+      "StepDay": 25,
+      "transaction_count": 57853,
+      "fraud_count": 240,
+      "fraud_rate": 0.004148445197310425
+    },
+    {
+      "StepDay": 26,
+      "transaction_count": 13885,
+      "fraud_count": 272,
+      "fraud_rate": 0.019589485055815627
+    },
+    {
+      "StepDay": 27,
+      "transaction_count": 8578,
+      "fraud_count": 280,
+      "fraud_rate": 0.03264164140825367
+    },
+    {
+      "StepDay": 28,
+      "transaction_count": 14661,
+      "fraud_count": 248,
+      "fraud_rate": 0.016915626492053748
+    },
+    {
+      "StepDay": 29,
+      "transaction_count": 54890,
+      "fraud_count": 260,
+      "fraud_rate": 0.004736746219712151
+    },
+    {
+      "StepDay": 30,
+      "transaction_count": 11287,
+      "fraud_count": 268,
+      "fraud_rate": 0.023744130415522282
+    },
+    {
+      "StepDay": 31,
+      "transaction_count": 272,
+      "fraud_count": 272,
+      "fraud_rate": 1.0
+    }
+  ],
+  "by_band": [
+    {
+      "AmountBand": "XS",
+      "transaction_count": 142642,
+      "fraud_count": 58,
+      "fraud_rate": 0.00040661235821146645
+    },
+    {
+      "AmountBand": "S",
+      "transaction_count": 1143361,
+      "fraud_count": 220,
+      "fraud_rate": 0.0001924151689623837
+    },
+    {
+      "AmountBand": "M",
+      "transaction_count": 2239253,
+      "fraud_count": 1429,
+      "fraud_rate": 0.0006381592432833628
+    },
+    {
+      "AmountBand": "L",
+      "transaction_count": 2706738,
+      "fraud_count": 3800,
+      "fraud_rate": 0.0014039038872620845
+    },
+    {
+      "AmountBand": "XL",
+      "transaction_count": 124976,
+      "fraud_count": 2419,
+      "fraud_rate": 0.019355716297529125
+    },
+    {
+      "AmountBand": "XXL",
+      "transaction_count": 5650,
+      "fraud_count": 287,
+      "fraud_rate": 0.05079646017699115
+    }
+  ]
+}

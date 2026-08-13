@@ -1,0 +1,254 @@
+================================================================================
+VALIDATION QUERIES OUTPUT - FraudDW
+Run at: 2026-08-14 01:00:02
+================================================================================
+
+────────────────────────────────────────────────────────────
+  Row count: stg.TransactionRaw
+────────────────────────────────────────────────────────────
+  Columns: ['Cnt']
+  (6362620,)
+  -> 1 row(s)
+
+────────────────────────────────────────────────────────────
+  Row count: fact.FactTransaction
+────────────────────────────────────────────────────────────
+  Columns: ['Cnt']
+  (6362620,)
+  -> 1 row(s)
+
+────────────────────────────────────────────────────────────
+  Row count: fact.FactModelScore
+────────────────────────────────────────────────────────────
+  Columns: ['Cnt']
+  (0,)
+  -> 1 row(s)
+
+────────────────────────────────────────────────────────────
+  Row count: fact.FactAlert
+────────────────────────────────────────────────────────────
+  Columns: ['Cnt']
+  (0,)
+  -> 1 row(s)
+
+────────────────────────────────────────────────────────────
+  Row count: dim.DimAccount
+────────────────────────────────────────────────────────────
+  Columns: ['Cnt']
+  (9073901,)
+  -> 1 row(s)
+
+────────────────────────────────────────────────────────────
+  Row count: dim.DimDate
+────────────────────────────────────────────────────────────
+  Columns: ['Cnt']
+  (31,)
+  -> 1 row(s)
+
+────────────────────────────────────────────────────────────
+  Row count: dim.DimTransactionType
+────────────────────────────────────────────────────────────
+  Columns: ['Cnt']
+  (5,)
+  -> 1 row(s)
+
+────────────────────────────────────────────────────────────
+  Row count: dim.DimAmountBand
+────────────────────────────────────────────────────────────
+  Columns: ['Cnt']
+  (6,)
+  -> 1 row(s)
+
+────────────────────────────────────────────────────────────
+  Fraud distribution (IsFraud)
+────────────────────────────────────────────────────────────
+  Columns: ['IsFraud', 'Cnt']
+  (False, 6354407)
+  (True, 8213)
+  -> 2 row(s)
+
+────────────────────────────────────────────────────────────
+  EDA-01: TotalRows, FraudRows, FlaggedFraudRows
+────────────────────────────────────────────────────────────
+  Columns: ['TotalRows', 'FraudRows', 'FlaggedFraudRows']
+  (6362620, 8213, 16)
+  -> 1 row(s)
+
+────────────────────────────────────────────────────────────
+  Amount: TotalAmount, FraudAmount
+────────────────────────────────────────────────────────────
+  Columns: ['TotalAmount', 'FraudAmount']
+  (Decimal('1144392944759.77'), Decimal('12056415427.84'))
+  -> 1 row(s)
+
+────────────────────────────────────────────────────────────
+  Orphan DateKey check
+────────────────────────────────────────────────────────────
+  Columns: ['Cnt']
+  (0,)
+  -> 1 row(s)
+
+────────────────────────────────────────────────────────────
+  Orphan OrigAccountKey check
+────────────────────────────────────────────────────────────
+  Columns: ['Cnt']
+  (0,)
+  -> 1 row(s)
+
+────────────────────────────────────────────────────────────
+  Orphan DestAccountKey check
+────────────────────────────────────────────────────────────
+  Columns: ['Cnt']
+  (0,)
+  -> 1 row(s)
+
+────────────────────────────────────────────────────────────
+  Orphan TransactionTypeKey check
+────────────────────────────────────────────────────────────
+  Columns: ['Cnt']
+  (0,)
+  -> 1 row(s)
+
+────────────────────────────────────────────────────────────
+  Orphan AmountBandKey check
+────────────────────────────────────────────────────────────
+  Columns: ['Cnt']
+  (0,)
+  -> 1 row(s)
+
+────────────────────────────────────────────────────────────
+  ETL Batch Log (audit.ETLBatchLog)
+────────────────────────────────────────────────────────────
+  Columns: ['BatchID', 'SourceFileName', 'Status', 'StartedAt', 'FinishedAt', 'Message']
+  (6, 'C:\\Users\\mac\\Downloads\\Du-an-nhom-1\\fraud-detection-data-mart\\data\\raw\\PS_20174392719_1491204439457_log.csv', 'SUCCESS', '2026-08-13 23:06:55.6491513', '2026-08-14 00:54:58.9452260', 'fact=6362620, reject=0')
+  -> 1 row(s)
+
+────────────────────────────────────────────────────────────
+  Transaction type distribution
+────────────────────────────────────────────────────────────
+  Columns: ['TypeCode', 'TypeName', 'Cnt', 'TotalAmount']
+  ('CASH_OUT', 'Rút tiền', 2237500, Decimal('394412995224.49'))
+  ('PAYMENT', 'Thanh toán', 2151495, Decimal('28093371138.37'))
+  ('CASH_IN', 'Nộp tiền', 1399284, Decimal('236367391912.46'))
+  ('TRANSFER', 'Chuyển tiền', 532909, Decimal('485291987263.17'))
+  ('DEBIT', 'Trừ tiền', 41432, Decimal('227199221.28'))
+  -> 5 row(s)
+
+────────────────────────────────────────────────────────────
+  Amount band distribution
+────────────────────────────────────────────────────────────
+  Columns: ['BandCode', 'BandLabel', 'Cnt', 'TotalAmount']
+  ('XS', 'Rất nhỏ', 142642, Decimal('71564293.99'))
+  ('S', 'Nhỏ', 1143361, Decimal('5973826065.64'))
+  ('M', 'Trung bình', 2239253, Decimal('89463125995.97'))
+  ('L', 'Lớn', 2706738, Decimal('715120902603.76'))
+  ('XL', 'Rất lớn', 124976, Decimal('253556603423.81'))
+  ('XXL', 'Cực lớn', 5650, Decimal('80206922376.60'))
+  -> 6 row(s)
+
+────────────────────────────────────────────────────────────
+  Top 5 fraud accounts (OrigAccount)
+────────────────────────────────────────────────────────────
+  Columns: ['AccountID', 'AccountType', 'FraudCnt', 'TotalFraudAmount']
+  ('C1919843108', 'C', 1, Decimal('455709.80'))
+  ('C1489638562', 'C', 1, Decimal('3070709.95'))
+  ('C992997855', 'C', 1, Decimal('1139983.15'))
+  ('C1666828573', 'C', 1, Decimal('18405.16'))
+  ('C1552242254', 'C', 1, Decimal('135977.23'))
+  -> 5 row(s)
+
+────────────────────────────────────────────────────────────
+  BI View: vw_TransactionSummary
+────────────────────────────────────────────────────────────
+  Columns: ['Cnt']
+  (2729,)
+  -> 1 row(s)
+
+────────────────────────────────────────────────────────────
+  BI View: vw_FraudAnalysis
+────────────────────────────────────────────────────────────
+  Columns: ['Cnt']
+  (2979,)
+  -> 1 row(s)
+
+────────────────────────────────────────────────────────────
+  BI View: vw_ModelPerformance
+────────────────────────────────────────────────────────────
+  Columns: ['Cnt']
+  (0,)
+  -> 1 row(s)
+
+────────────────────────────────────────────────────────────
+  BI View: vw_AlertSummary
+────────────────────────────────────────────────────────────
+  Columns: ['Cnt']
+  (0,)
+  -> 1 row(s)
+
+────────────────────────────────────────────────────────────
+  BI View: vw_ETLQuality
+────────────────────────────────────────────────────────────
+  Columns: ['Cnt']
+  (1,)
+  -> 1 row(s)
+
+────────────────────────────────────────────────────────────
+  BI View sample: vw_TransactionSummary (TOP 3)
+────────────────────────────────────────────────────────────
+  Columns: ['DateKey', 'StepDay', 'TimeKey', 'TypeCode', 'TransactionCount', 'TotalAmount', 'FraudCount', 'FraudRate']
+  (20230101, 1, 16, 'TRANSFER', 3490, Decimal('2241390886.22'), 3, Decimal('0.000860'))
+  (20230101, 1, 3, 'PAYMENT', 294, Decimal('1262506.12'), 0, Decimal('0.000000'))
+  (20230101, 1, 23, 'CASH_OUT', 594, Decimal('110810265.94'), 3, Decimal('0.005051'))
+  -> 3 row(s)
+
+────────────────────────────────────────────────────────────
+  BI View sample: vw_FraudAnalysis (TOP 3)
+────────────────────────────────────────────────────────────
+  Columns: ['DateKey', 'StepDay', 'TimeSlot', 'TypeCode', 'BandCode', 'BandLabel', 'OrigAccountType', 'DestAccountType', 'TransactionCount', 'FraudCount', 'TotalAmount', 'TotalBalanceDropOrig']
+  (20230101, 1, 'AFTERNOON', 'CASH_IN', 'XS', 'Rất nhỏ', 'C', 'C', 197, 0, Decimal('94323.69'), Decimal('-94323.68'))
+  (20230101, 1, 'AFTERNOON', 'CASH_OUT', 'XS', 'Rất nhỏ', 'C', 'C', 299, 3, Decimal('155946.14'), Decimal('86326.38'))
+  (20230101, 1, 'AFTERNOON', 'DEBIT', 'XS', 'Rất nhỏ', 'C', 'C', 217, 0, Decimal('99624.32'), Decimal('79946.54'))
+  -> 3 row(s)
+
+────────────────────────────────────────────────────────────
+  BI View sample: vw_ModelPerformance (TOP 3)
+────────────────────────────────────────────────────────────
+  Columns: ['DateKey', 'ModelName', 'Version', 'PolicyVersion', 'RiskLevel', 'ScoreCount', 'AvgFraudScore', 'PredictedFraudCount', 'TruePositiveCount']
+  -> 0 row(s)
+
+────────────────────────────────────────────────────────────
+  BI View sample: vw_AlertSummary (TOP 3)
+────────────────────────────────────────────────────────────
+  Columns: ['DateKey', 'RiskLevel', 'AlertLevel', 'AlertStatus', 'AlertCount', 'AlertAmount', 'AvgFraudScore']
+  -> 0 row(s)
+
+────────────────────────────────────────────────────────────
+  BI View sample: vw_ETLQuality (TOP 3)
+────────────────────────────────────────────────────────────
+  Columns: ['BatchID', 'SourceFileName', 'StagingRows', 'StagingFraudRows', 'FirstLoadedAt', 'LastLoadedAt']
+  (6, 'PS_20174392719_1491204439457_log.csv', 6362620, 8213, '2026-08-13 23:06:57.0761800', '2026-08-14 00:52:49.2825624')
+  -> 1 row(s)
+
+────────────────────────────────────────────────────────────
+  Duplicate check: same OrigAccount+DestAccount+Amount+Step
+────────────────────────────────────────────────────────────
+  Columns: ['TotalRows', 'UniqueRows']
+  (6362620, 6362620)
+  -> 1 row(s)
+
+================================================================================
+SUMMARY ASSESSMENT
+================================================================================
+
+  [PASS] Row count: actual=6362620 expected=6362620
+  [PASS] Fraud count: actual=8213 expected=8213
+  [PASS] Total Amount: actual=1144392944759.77 expected=1144392944759.77
+  [PASS] Fraud Amount: actual=12056415427.84 expected=12056415427.84
+  [PASS] Orphan FK: DateKey: actual=0 expected=0
+  [PASS] Orphan FK: OrigAccountKey: actual=0 expected=0
+  [PASS] Orphan FK: DestAccountKey: actual=0 expected=0
+  [PASS] Orphan FK: TransactionTypeKey: actual=0 expected=0
+  [PASS] Orphan FK: AmountBandKey: actual=0 expected=0
+  [PASS] FlaggedFraud count: actual=16 expected=16
+
+Overall: PASS
