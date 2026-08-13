@@ -28,11 +28,14 @@
 |----------|---------|
 | Số bảng Dimension | 7/7 ✅ |
 | Số bảng Fact | 3/3 ✅ |
-| Số BI Views | *[TODO]* |
-| Tổng dòng Staging load | *[TODO: 6.362.620 rows expected]* |
-| Tổng dòng FactTransaction | *[TODO]* |
-| Reconciliation | *[TODO: PASS/FAIL]* |
-| Thời gian ETL | *[TODO: X phút]* |
+| Số BI Views | 5/5 ✅ |
+| Tổng dòng Staging load | 6.362.620 ✅ |
+| Tổng dòng FactTransaction | 6.362.620 ✅ |
+| Reconciliation | PASS ✅ |
+| Thời gian ETL | 1h48m (lần 1) / 1h46m (lần 2) |
+| ETL re-run (không duplicate) | PASS ✅ |
+| Orphan FK | 0/5 ✅ |
+| EDA comparison | 140/141 PASS ✅ |
 
 ### 2.2 Phân tích Dữ liệu (TV3 — Data Analyst)
 
@@ -71,8 +74,8 @@
 
 | KPI | Mục tiêu | Kết quả |
 |-----|---------|---------|
-| ETL Reconciliation Rate | = 100% | *[TODO]* |
-| Fraud Rate (Volume) | ~0.13% (verify) | 0,129% (8.213/6.362.620) |
+| ETL Reconciliation Rate | = 100% | 100% ✅ (2 lần chạy) |
+| Fraud Rate (Volume) | ~0.13% (verify) | 0,129% (8.213/6.362.620) ✅ |
 | Recall | ≥ 80% | *[TODO]* |
 | F2-Score | ≥ 0.70 | *[TODO]* |
 | Captured Fraud Loss Rate | Tối đa | *[TODO]* |
