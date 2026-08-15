@@ -348,3 +348,67 @@ Data Mart PaySim Fraud Detection đã sẵn sàng cho các bước tiếp theo:
 ---
 
 *Báo cáo được tạo tự động bởi Claude Code — 14/08/2026*
+
+---
+
+## Phụ lục sửa lỗi ETL ngày 14/08/2026
+
+### Nguyên nhân gốc
+
+`load_dimensions_for_chunk` tạo một `list[str]` phẳng từ `NameOrig` và
+`NameDest`. Ở lần lỗi, danh sách có 32.653 account duy nhất; `ensure_accounts`
+tạo đúng 32.653 dấu `?` trong một mệnh đề `IN`. Câu lệnh này vượt xa giới hạn
+2.100 tham số của SQL Server. Không tìm thấy list/tuple lồng tại điểm gọi.
+
+### Thay đổi kỹ thuật
+
+- `src/etl/load_dimensions.py`: chuẩn hóa và làm phẳng đầu vào; bỏ `None`, chuỗi
+  rỗng và ID sai định dạng; khử trùng; nạp vào `#AccountInput` bằng
+  `executemany` một marker; insert thiếu và đọc mapping bằng `JOIN`.
+- Việc cấp `AccountKey` dùng `UPDLOCK, HOLDLOCK`, giữ nguyên key đã tồn tại và
+  tránh race của cách `MAX(AccountKey)+1` theo từng account trước đây.
+- `src/etl/load_facts.py`: nạp chunk vào bảng tạm rồi `INSERT ... WHERE NOT
+  EXISTS` theo khóa nghiệp vụ đầy đủ. Chạy lại cùng dữ liệu không insert fact
+  lần hai; `UX_FactTransaction_BusinessGrain` bảo vệ ở database và giúp lookup
+  dùng index; mỗi chunk commit hoặc rollback nguyên khối.
+- `src/etl/reconciliation.py`: đối chiếu đúng các fact khớp staging của BatchID
+  theo business grain thay vì đếm toàn bộ fact. Kết quả tách `inserted_rows`,
+  `existing_rows`, `final_fact_rows`; lần chạy lại insert 0 vẫn PASS nếu row,
+  Amount, fraud, duplicate và orphan đều đạt.
+- `src/etl/validate.py` và `sql/08_validation_queries.sql`: bổ sung required
+  null, domain, amount âm, duplicate, reject accounting và sáu orphan FK.
+
+Batch log chỉ được ghi `SUCCESS` khi reconciliation PASS; ngoại lệ được ghi
+`ERROR` kèm nội dung. Các chunk đã commit trước lỗi không bị xóa; cơ chế
+idempotent sẽ nhận biết chúng khi chạy lại. Đây là lựa chọn có chủ ý để tránh
+một transaction 6,36 triệu dòng làm phình transaction log.
+
+### Lệnh chạy lại
+
+```powershell
+python -m pytest tests -q
+$env:FRAUD_DB_SERVER='localhost\SQLEXPRESS'
+sqlcmd -S 'localhost\SQLEXPRESS' -E -i sql\09_etl_idempotency_migration.sql
+python -m src.etl.run_etl
+sqlcmd -S 'localhost\SQLEXPRESS' -E -i sql\08_validation_queries.sql
+```
+
+Phải chạy test và validation trên đúng máy có Python dependencies và SQL
+Server trước khi tuyên bố bản sửa end-to-end PASS. Kết quả lịch sử 6.362.620
+fact, 8.213 fraud và tổng Amount 1.144.392.944.759,77 được giữ làm bằng chứng
+cũ, không được coi là kết quả chạy lại của bản sửa này.
+
+### Kết quả xác minh bản sửa trong workspace hiện tại
+
+- PASS: `python -m compileall -q src tests` và parse AST toàn bộ 38 file Python.
+- PASS: `git diff --check`.
+- Chưa chạy được pytest: `.venv` đang trỏ tới Python 3.12 đã bị gỡ; Python
+  MSYS2 3.12.11 còn lại không có `pip`, `pytest`, `pandas` hoặc `pyodbc`.
+- Hai service SQL Server `SQLEXPRESS` và `CHAM` đang chạy, nhưng kiểm tra đọc
+  bằng `sqlcmd` thất bại do SSL/Windows credentials trước khi chọn được database
+  test. Không chạy migration hoặc ghi vào database chưa xác định. Vì vậy chưa
+  có row count, ETL lần một/lần hai hay reconciliation thực tế sau bản sửa.
+
+Rủi ro còn lại: migration tạo unique index trên 6,36 triệu dòng có thể tốn thời
+gian và transaction-log/disk đáng kể. Script sẽ dừng an toàn nếu phát hiện
+duplicate, không tự xóa hoặc hợp nhất dữ liệu.

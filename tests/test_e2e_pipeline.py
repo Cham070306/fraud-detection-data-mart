@@ -137,12 +137,10 @@ def test_e2e_reconciliation_logic():
         def execute(self, sql, p=()):
             self._sql = sql
         def fetchall(self):
-            if "IsFraud" in self._sql:
-                return [(self._c._f,)]
-            if "COUNT_BIG" in self._sql:
-                return [(self._c._r,)]
-            if "SUM(Amount)" in self._sql:
-                return [(self._c._a,)]
+            if "BatchFacts" in self._sql:
+                return [(self._c._r, self._c._a, self._c._f)]
+            if "duplicate_grains" in self._sql or "WHERE d.DateKey IS NULL" in self._sql:
+                return [(0,)]
             return []
         def close(self):
             pass

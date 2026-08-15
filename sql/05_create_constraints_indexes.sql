@@ -31,6 +31,14 @@ GO
 
 CREATE INDEX IX_FactTransaction_DateType ON fact.FactTransaction(DateKey, TransactionTypeKey);
 CREATE INDEX IX_FactTransaction_Fraud ON fact.FactTransaction(IsFraud, DateKey);
+-- Natural/business grain used by the idempotent ETL loader. PaySim profiling
+-- confirms zero duplicate rows at this grain. The index also makes the
+-- chunk-level NOT EXISTS lookup seekable on re-runs.
+CREATE UNIQUE INDEX UX_FactTransaction_BusinessGrain ON fact.FactTransaction(
+    DateKey, TimeKey, TransactionTypeKey, OrigAccountKey, DestAccountKey,
+    AmountBandKey, StepRaw, Amount, OldBalanceOrig, NewBalanceOrig,
+    OldBalanceDest, NewBalanceDest, IsFraud, IsFlaggedFraud
+);
 CREATE INDEX IX_FactModelScore_Transaction ON fact.FactModelScore(TransactionKey, ModelVersionKey);
 CREATE INDEX IX_FactAlert_LevelStatus ON fact.FactAlert(AlertLevel, AlertStatus, DateKey);
 GO

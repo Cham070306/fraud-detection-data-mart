@@ -23,12 +23,11 @@ class FakeCursor:
 
     def fetchall(self):
         sql = self._sql
-        if 'COUNT_BIG' in sql and 'IsFraud' in sql:
-            return [(self._conn._fact_fraud,)]
-        if 'COUNT_BIG' in sql:
-            return [(self._conn._fact_rows,)]
-        if 'SUM(Amount)' in sql:
-            return [(self._conn._fact_amount,)]
+        if 'BatchFacts' in sql:
+            return [(self._conn._fact_rows, self._conn._fact_amount,
+                     self._conn._fact_fraud)]
+        if 'duplicate_grains' in sql or 'WHERE d.DateKey IS NULL' in sql:
+            return [(0,)]
         return []
 
     def close(self):
@@ -48,3 +47,19 @@ def test_reconcile_fail_on_row_mismatch():
     result = reconcile(conn, batch_id=1, expected_source_rows=10, expected_amount_sum=100.0, expected_fraud_count=2)
     assert result['status'] == 'FAIL'
     assert result['row_count_match'] is False
+
+
+def test_reconcile_fail_on_amount_mismatch():
+    conn = FakeConn(fact_rows=10, fact_amount=99.0, fact_fraud=2)
+    result = reconcile(conn, batch_id=1, expected_source_rows=10,
+                       expected_amount_sum=100.0, expected_fraud_count=2)
+    assert result['status'] == 'FAIL'
+    assert result['amount_match'] is False
+
+
+def test_idempotent_rerun_with_zero_inserts_passes():
+    result = reconcile(FakeConn(10, 100.0, 2), 2, 10, 100.0, 2,
+                       inserted_rows=0)
+    assert result['status'] == 'PASS'
+    assert result['inserted_rows'] == 0
+    assert result['existing_rows'] == 10

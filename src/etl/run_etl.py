@@ -86,6 +86,13 @@ def _log_rejects(conn, reject_rows_all):
         cur.close()
 
 
+def _safe_step(value):
+    try:
+        return int(value)
+    except (TypeError, ValueError, OverflowError):
+        return None
+
+
 def run_pipeline(cfg=None, load_staging=True):
     cfg = cfg or AppConfig.load()
     logger.info("Bat dau pipeline ETL")
@@ -99,23 +106,25 @@ def run_pipeline(cfg=None, load_staging=True):
         total_source = 0
         total_valid = 0
         total_reject = 0
-        total_fact = 0
+        total_inserted = 0
         total_amount = 0.0
         total_fraud = 0
         reject_rows_all = []
 
         for chunk_idx, chunk in enumerate(extract_chunks(cfg)):
             total_source += len(chunk)
-            if load_staging:
-                _load_staging(conn, chunk, batch_id, source_name, chunk_idx, cfg.chunk_size)
-
             valid, reject = validate_chunk(chunk)
             total_valid += len(valid)
             total_reject += len(reject)
+            # The staging schema is typed and NOT NULL, so rejected raw values
+            # belong in RejectLog; loading them first would fail before DQ can
+            # record the real rejection reason.
+            if load_staging:
+                _load_staging(conn, valid, batch_id, source_name, chunk_idx, cfg.chunk_size)
             for _, r in reject.iterrows():
                 reject_rows_all.append((
                     batch_id, source_name, chunk_idx,
-                    int(r.get("step", -1)), str(r.get("RejectReason", "")),
+                    _safe_step(r.get("step")), str(r.get("RejectReason", "")),
                 ))
 
             transformed = transform_chunk(valid, start_date=cfg.start_date)
@@ -124,7 +133,7 @@ def run_pipeline(cfg=None, load_staging=True):
 
             lookups = load_dimensions_for_chunk(conn, transformed)
             inserted = load_fact_transaction(conn, transformed, lookups, batch_id)
-            total_fact += inserted
+            total_inserted += inserted
             logger.info(
                 f"Chunk {chunk_idx}: source={len(chunk)} valid={len(valid)} "
                 f"reject={len(reject)} fact={inserted}"
@@ -132,10 +141,19 @@ def run_pipeline(cfg=None, load_staging=True):
 
         _log_rejects(conn, reject_rows_all)
 
-        result = reconcile(conn, batch_id, total_valid, total_amount, total_fraud)
+        result = reconcile(
+            conn, batch_id, total_valid, total_amount, total_fraud,
+            inserted_rows=total_inserted,
+        )
         log_reconciliation(conn, result)
-        status = "SUCCESS" if result["status"] == "PASS" else "FAIL"
-        finalize_batch(conn, batch_id, status, f"fact={total_fact}, reject={total_reject}")
+        validation_pass = total_reject == 0 and total_source == total_valid
+        status = "SUCCESS" if result["status"] == "PASS" and validation_pass else "FAIL"
+        finalize_batch(
+            conn, batch_id, status,
+            (f"source={total_source}, valid={total_valid}, reject={total_reject}, "
+             f"inserted={total_inserted}, existing={result['existing_rows']}, "
+             f"matched_fact={result['final_fact_rows']}")
+        )
         logger.info(f"Pipeline hoan thanh: {status}")
 
         return {
@@ -143,8 +161,11 @@ def run_pipeline(cfg=None, load_staging=True):
             "status": status,
             "source_rows": total_source,
             "valid_rows": total_valid,
+            "rejected_rows": total_reject,
             "reject_rows": total_reject,
-            "fact_rows": total_fact,
+            "inserted_rows": total_inserted,
+            "existing_rows": result["existing_rows"],
+            "final_fact_rows": result["final_fact_rows"],
             "amount_sum": total_amount,
             "fraud_count": total_fraud,
             "reconciliation": result,
