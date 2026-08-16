@@ -23,4 +23,3 @@ Before writing to SQL Server, confirm the database/server, authentication method
 ## Idempotency validation
 
 After load, assert that both target tables contain no duplicate `(TransactionKey, ModelVersion)` pairs and that counts reconcile with the source batch. For v1.0.0, the full score candidate contains 6,362,620 rows and the alert candidate contains 8,218 rows.
-

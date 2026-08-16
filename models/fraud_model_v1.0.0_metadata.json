@@ -57,7 +57,7 @@
   },
   "sampling_strategy": "all fraud rows plus deterministic non-fraud sample",
   "risk_policy_version": "1.0.0",
-  "git_commit": "e22380c",
+  "git_commit": null,
   "algorithm_parameters": {
     "bootstrap": true,
     "ccp_alpha": 0.0,

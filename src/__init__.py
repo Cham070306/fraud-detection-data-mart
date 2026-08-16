@@ -1,2 +1,1 @@
 """PaySim fraud detection package."""
-

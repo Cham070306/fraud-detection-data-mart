@@ -21,4 +21,3 @@ def generate_alerts(scored: pd.DataFrame, existing: pd.DataFrame | None = None) 
         new_keys = pd.MultiIndex.from_frame(alerts[["TransactionKey", "ModelVersion"]])
         alerts = alerts.loc[~new_keys.isin(old_keys)]
     return alerts.reset_index(drop=True)
-

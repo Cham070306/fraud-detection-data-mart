@@ -14,4 +14,3 @@ def only_new_scores(scored: pd.DataFrame, existing: pd.DataFrame | None = None) 
         candidate_keys = pd.MultiIndex.from_frame(result[keys])
         result = result.loc[~candidate_keys.isin(existing_keys)]
     return result.reset_index(drop=True)
-

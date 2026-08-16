@@ -7,4 +7,3 @@ def recommended_action(risk_level: str) -> str:
         return actions[risk_level.upper()]
     except KeyError as exc:
         raise ValueError(f"Unknown RiskLevel: {risk_level}") from exc
-

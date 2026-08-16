@@ -16,4 +16,3 @@ def classify_risk(score: float, policy: dict):
         if rule["min_score"] <= score < rule["max_score"]:
             return name.upper(), bool(rule["alert"]), rule["action"]
     raise ValueError(f"No risk policy interval covers score {score}")
-

@@ -14,6 +14,8 @@ def sample_frame(n=180):
     amount = rng.lognormal(8, 1.2, len(step))
     tx_type = rng.choice(["PAYMENT", "TRANSFER", "CASH_OUT"], len(step))
     fraud = ((tx_type == "TRANSFER") & (amount > np.quantile(amount, .82))).astype(int)
+    # Guarantee positives in every temporal step so validation/test metrics are meaningful.
+    fraud[np.arange(len(step)) % (n // 18) == (n // 18 - 1)] = 1
     old_orig = amount * rng.uniform(.5, 2.0, len(step))
     return pd.DataFrame({
         "step": step, "type": tx_type, "amount": amount,

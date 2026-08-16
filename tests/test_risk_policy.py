@@ -20,4 +20,3 @@ def test_boundaries(score, level, alert):
 def test_rejects_invalid_score(score):
     with pytest.raises(ValueError):
         classify_risk(score, POLICY)
-

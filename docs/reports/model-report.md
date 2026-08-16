@@ -18,11 +18,11 @@ Preprocessing was fit on train only. The target, identifiers, downstream score/r
 
 ## Models and validation results
 
-| Model | Training rows | PR-AUC | Precision | Recall | F2 | FP | FN | Alerts |
-|---|---:|---:|---:|---:|---:|---:|---:|---:|
-| Baseline prior | 6,082,007 | 0.006173 | 0.000000 | 0.000000 | 0.000000 | 0 | 1,180 | 0 |
-| Logistic Regression | 6,082,007 | 0.846412 | 0.640127 | 0.851695 | 0.798887 | 565 | 175 | 1,570 |
-| Random Forest | 500,000 | 0.999997 | 0.996622 | 1.000000 | 0.999322 | 4 | 0 | 1,184 |
+| Model | Training rows | PR-AUC | Precision | Recall | F2 | FP | FN | Alerts | Fraud amount captured | Fraud amount missed | Capture rate |
+|---|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|
+| Business rule (`baseline_rule`) | 6,082,007 | 0.024149 | 0.030893 | 0.981356 | 0.137191 | 36,326 | 22 | 37,484 | 1,330,804,126.27 | 166,472,835.47 | 88.8816% |
+| Logistic Regression | 6,082,007 | 0.846412 | 0.640127 | 0.851695 | 0.798887 | 565 | 175 | 1,570 | 1,473,381,337.37 | 23,895,624.37 | 98.4041% |
+| Random Forest | 500,000 | 0.999997 | 0.996622 | 1.000000 | 0.999322 | 4 | 0 | 1,184 | 1,497,276,961.73 | 0.00 | 100.0000% |
 
 Random Forest was selected. To keep tree training tractable, its fit set retained every fraud row and sampled non-fraud rows up to 500,000 total rows. Model comparison and threshold selection used the complete validation set.
 
@@ -35,6 +35,20 @@ Random Forest was selected. To keep tree training tractable, its fit set retaine
 - Test F2: **0.999201**.
 - Confusion matrix: TN 88,213; FP 1; FN 1; TP 1,251.
 - Test alerts at model threshold: 1,252 (13.994 per 1,000 transactions).
+- Test fraud amount captured: **2,129,729,633.40**.
+- Test fraud amount missed: **399,045.09**.
+- Test fraud amount capture rate: **99.981267%**.
+
+The threshold is a technical recommendation selected by validation F2 subject to minimum recall. It is not yet business-approved. Final approval requires confirmed FP/FN costs, daily alert-review capacity and sign-off from the risk-policy owner.
+
+## Evaluation artifacts
+
+- [Threshold analysis](../../output/evaluation/threshold_analysis.csv)
+- [Model comparison](../../output/evaluation/model_comparison.csv)
+- [Test confusion matrix](../../output/evaluation/confusion_matrix_test.svg)
+- [Validation precision-recall curve](../../output/evaluation/precision_recall_validation.svg)
+- [Threshold metrics](../../output/evaluation/threshold_metrics.svg)
+- [Threshold alert volume](../../output/evaluation/threshold_alert_volume.svg)
 
 ## Full scoring output
 
@@ -50,3 +64,4 @@ Random Forest was selected. To keep tree training tractable, its fit set retaine
 
 PaySim is synthetic and the balance-derived variables make its fraud patterns unusually separable. The near-perfect metrics must not be treated as evidence of production banking performance. Before operational use, validate temporal stability, probability calibration, alert capacity, data drift and performance on representative real-world data.
 
+SQL Server loading is not complete: `FactModelScore`, `FactAlert`, SQL idempotency, foreign keys, batch controls and database row-count reconciliation remain dependent on Data Engineer connection/schema details. Git provenance is also unavailable for this working directory, so metadata intentionally records `git_commit: null`.

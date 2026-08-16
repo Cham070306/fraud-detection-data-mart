@@ -40,4 +40,3 @@ def resolve_model(version=None, registry_path="models/registry.json"):
     if sha256_file(entry["model_path"]) != entry["sha256"]:
         raise ValueError(f"Model integrity check failed for version {version}")
     return entry
-
