@@ -1,0 +1,6 @@
+policy_version: "1.0.0"
+levels:
+  low: {min_score: 0.0, max_score: 0.30, alert: false, action: "No action"}
+  medium: {min_score: 0.30, max_score: 0.60, alert: false, action: "Monitor transaction"}
+  high: {min_score: 0.60, max_score: 0.85, alert: true, action: "Review within 24 hours"}
+  critical: {min_score: 0.85, max_score: 1.0000001, alert: true, action: "Immediate investigation"}

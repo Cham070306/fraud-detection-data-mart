@@ -1,0 +1,10 @@
+data/raw/
+data/processed/
+models/*.joblib
+output/
+.venv*/
+__pycache__/
+.pytest_cache/
+.vendor/
+*.pyc
+.env

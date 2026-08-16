@@ -1,0 +1,53 @@
+{
+  "model_name": "random_forest",
+  "version": "dev",
+  "created_at": "2026-08-16T14:29:28.371469+00:00",
+  "threshold": 0.6799999999999999,
+  "validation_metrics": {
+    "pr_auc": 0.8375988441454891,
+    "precision": 1.0,
+    "recall": 0.8333333333333334,
+    "f2": 0.8620689655172413,
+    "tn": 21085,
+    "fp": 0,
+    "fn": 2,
+    "tp": 10,
+    "alert_count": 10,
+    "alerts_per_1000": 0.47400104280229416
+  },
+  "test_metrics": {
+    "pr_auc": 0.9282318346315227,
+    "precision": 1.0,
+    "recall": 0.9230769230769231,
+    "f2": 0.9375,
+    "tn": 64876,
+    "fp": 0,
+    "fn": 2,
+    "tp": 24,
+    "alert_count": 24,
+    "alerts_per_1000": 0.36978829620042525
+  },
+  "feature_list": [
+    "TransactionType",
+    "Amount",
+    "LogAmount",
+    "StepRaw",
+    "Hour",
+    "Day",
+    "OldBalanceOrig",
+    "NewBalanceOrig",
+    "BalanceChangeOrig",
+    "BalanceDropOrig",
+    "OrigBalanceError",
+    "OldBalanceDest",
+    "NewBalanceDest",
+    "BalanceChangeDest",
+    "DestBalanceError",
+    "AmountToOrigBalance",
+    "AmountToDestBalance",
+    "OrigBalanceBecomesZero",
+    "DestBalanceWasZero",
+    "IsTransfer",
+    "IsCashOut"
+  ]
+}
