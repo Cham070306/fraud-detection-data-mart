@@ -6,7 +6,7 @@
 #
 # Xem tài liệu chi tiết tại: docs/design/decision_policy.md
 
-policy_version: "v1.0"
+policy_version: "1.0.0"
 effective_date: "2026-08-09"
 
 # QUY ƯỚC RANH GIỚI (Boundary Rule):
@@ -52,5 +52,13 @@ risk_levels:
 
 # Ngưỡng mặc định cho binary classification (IsPredictedFraud = 1 nếu score ≥ threshold)
 # Được tối ưu bởi TV4 (ML Engineer) dựa trên Precision-Recall Curve
-# TODO: TV4 cập nhật giá trị sau khi chạy select_threshold.py
-default_classification_threshold: 0.50
+# Được TV4 chọn trên validation set cho model v1.0.0.
+default_classification_threshold: 0.32
+
+# Dạng mapping được ML scoring pipeline sử dụng. Giữ đồng bộ với risk_levels
+# ở trên để tương thích với config loader của Data Mart.
+levels:
+  low: {min_score: 0.0, max_score: 0.30, alert: false, action: "No action"}
+  medium: {min_score: 0.30, max_score: 0.60, alert: false, action: "Monitor transaction"}
+  high: {min_score: 0.60, max_score: 0.85, alert: true, action: "Review within 24 hours"}
+  critical: {min_score: 0.85, max_score: 1.0000001, alert: true, action: "Immediate investigation"}

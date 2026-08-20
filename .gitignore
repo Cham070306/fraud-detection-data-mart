@@ -37,3 +37,8 @@ logs/
 .ipynb_checkpoints/
 .vscode/
 .idea/
+
+# --- ML artifacts & local environments ---
+output/
+.venv*/
+.vendor/

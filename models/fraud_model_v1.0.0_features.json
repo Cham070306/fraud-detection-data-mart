@@ -1,0 +1,23 @@
+[
+  "TransactionType",
+  "Amount",
+  "LogAmount",
+  "StepRaw",
+  "Hour",
+  "Day",
+  "OldBalanceOrig",
+  "NewBalanceOrig",
+  "BalanceChangeOrig",
+  "BalanceDropOrig",
+  "OrigBalanceError",
+  "OldBalanceDest",
+  "NewBalanceDest",
+  "BalanceChangeDest",
+  "DestBalanceError",
+  "AmountToOrigBalance",
+  "AmountToDestBalance",
+  "OrigBalanceBecomesZero",
+  "DestBalanceWasZero",
+  "IsTransfer",
+  "IsCashOut"
+]
