@@ -17,3 +17,9 @@
 - Threshold: 0.32, selected on validation.
 - Test: PR-AUC 0.999999; precision/recall/F2 0.999201; FP 1; FN 1.
 - Integrity: model SHA-256 is stored in `models/registry.json` and checked when resolving a registered model.
+
+## BI handoff
+
+- Versioned reference tables: `docs/integration/bi_model_handoff/`.
+- Data contract and Power BI acceptance checks: `docs/integration/bi-model-handoff.md`.
+- Production-like score and alert facts remain dependent on the SQL handoff with TV2.

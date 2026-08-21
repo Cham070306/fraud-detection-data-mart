@@ -1,0 +1,5 @@
+﻿ModelVersion,ActualClass,PredictedClass,Count
+1.0.0,LEGIT,LEGIT,88213
+1.0.0,LEGIT,FRAUD,1
+1.0.0,FRAUD,LEGIT,1
+1.0.0,FRAUD,FRAUD,1251

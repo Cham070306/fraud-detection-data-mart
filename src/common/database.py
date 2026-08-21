@@ -1,9 +1,13 @@
 from __future__ import annotations
-import pyodbc
-from typing import Iterator, Any, Optional
+from typing import Any
 from src.common.config import AppConfig, DatabaseConfig
 
-def get_connection(cfg: AppConfig | DatabaseConfig | None = None) -> pyodbc.Connection:
+def get_connection(cfg: AppConfig | DatabaseConfig | None = None) -> Any:
+    # Import lazily so pure unit tests with fake connections do not require the
+    # host-level unixODBC driver. A real SQL Server connection still fails here
+    # with the original ImportError when the driver is not installed.
+    import pyodbc
+
     if cfg is None:
         cfg = AppConfig.load()
     if isinstance(cfg, AppConfig):
@@ -12,7 +16,7 @@ def get_connection(cfg: AppConfig | DatabaseConfig | None = None) -> pyodbc.Conn
         db_cfg = cfg
     return pyodbc.connect(db_cfg.connection_string(), autocommit=False)
 
-def execute(conn: pyodbc.Connection, sql: str, params: tuple = ()) -> None:
+def execute(conn: Any, sql: str, params: tuple = ()) -> None:
     cur = conn.cursor()
     try:
         cur.execute(sql, params)
@@ -23,7 +27,7 @@ def execute(conn: pyodbc.Connection, sql: str, params: tuple = ()) -> None:
     finally:
         cur.close()
 
-def query(conn: pyodbc.Connection, sql: str, params: tuple = ()) -> list:
+def query(conn: Any, sql: str, params: tuple = ()) -> list:
     cur = conn.cursor()
     try:
         cur.execute(sql, params)
@@ -32,7 +36,7 @@ def query(conn: pyodbc.Connection, sql: str, params: tuple = ()) -> list:
     finally:
         cur.close()
 
-def insert_rows(conn: pyodbc.Connection, sql: str, rows: list) -> int:
+def insert_rows(conn: Any, sql: str, rows: list) -> int:
     cur = conn.cursor()
     try:
         cur.executemany(sql, rows)

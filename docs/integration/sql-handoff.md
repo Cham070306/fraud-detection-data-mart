@@ -1,5 +1,8 @@
 # ML to SQL Server handoff
 
+Power BI contract, reference tables and acceptance checks are documented in
+`docs/integration/bi-model-handoff.md`.
+
 ## FactModelScore candidate
 
 Source file: `output/model_scoring_full_v1.0.0.csv`.
@@ -23,3 +26,10 @@ Before writing to SQL Server, confirm the database/server, authentication method
 ## Idempotency validation
 
 After load, assert that both target tables contain no duplicate `(TransactionKey, ModelVersion)` pairs and that counts reconcile with the source batch. For v1.0.0, the full score candidate contains 6,362,620 rows and the alert candidate contains 8,218 rows.
+
+## Handoff boundary
+
+TV4 owns the feature list, model/threshold metadata, scoring fields, policy
+mapping and ML reconciliation totals. TV2 owns the physical SQL load, keys,
+constraints, batch transaction and database reconciliation. TV5 consumes only
+the agreed BI views after TV2 and TV4 sign off the row counts and versions.

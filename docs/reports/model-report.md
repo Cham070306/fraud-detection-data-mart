@@ -41,14 +41,16 @@ Random Forest was selected. To keep tree training tractable, its fit set retaine
 
 The threshold is a technical recommendation selected by validation F2 subject to minimum recall. It is not yet business-approved. Final approval requires confirmed FP/FN costs, daily alert-review capacity and sign-off from the risk-policy owner.
 
-## Evaluation artifacts
+## BI handoff artifacts
 
-- [Threshold analysis](../../output/evaluation/threshold_analysis.csv)
-- [Model comparison](../../output/evaluation/model_comparison.csv)
-- [Test confusion matrix](../../output/evaluation/confusion_matrix_test.svg)
-- [Validation precision-recall curve](../../output/evaluation/precision_recall_validation.svg)
-- [Threshold metrics](../../output/evaluation/threshold_metrics.svg)
-- [Threshold alert volume](../../output/evaluation/threshold_alert_volume.svg)
+Các bảng nhỏ đã version hóa để dựng và kiểm tra trang Model Performance nằm tại
+`docs/integration/bi_model_handoff/`: `model_performance.csv`,
+`confusion_matrix.csv` và `risk_policy.csv`. Chạy
+`python scripts/build_bi_handoff.py` để tái tạo từ metadata và risk policy.
+
+Các đồ thị thử nghiệm chi tiết trong `output/evaluation/` là output cục bộ có thể
+tái tạo bằng `scripts/generate_evaluation_artifacts.py`; thư mục `output/` không
+được commit theo quy định repository.
 
 ## Full scoring output
 
@@ -64,4 +66,4 @@ The threshold is a technical recommendation selected by validation F2 subject to
 
 PaySim is synthetic and the balance-derived variables make its fraud patterns unusually separable. The near-perfect metrics must not be treated as evidence of production banking performance. Before operational use, validate temporal stability, probability calibration, alert capacity, data drift and performance on representative real-world data.
 
-SQL Server loading is not complete: `FactModelScore`, `FactAlert`, SQL idempotency, foreign keys, batch controls and database row-count reconciliation remain dependent on Data Engineer connection/schema details. Git provenance is also unavailable for this working directory, so metadata intentionally records `git_commit: null`.
+SQL Server loading is not complete: `FactModelScore`, `FactAlert`, SQL idempotency, foreign keys, batch controls and database row-count reconciliation remain dependent on Data Engineer connection/schema details. Metadata của lần huấn luyện hiện ghi `git_commit: null`; lần train/release kế tiếp phải truyền commit hiện hành để truy vết đầy đủ.

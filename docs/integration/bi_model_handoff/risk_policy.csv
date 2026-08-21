@@ -1,0 +1,5 @@
+﻿PolicyVersion,RiskLevel,ScoreMin,ScoreMax,RecommendedAction,CreateAlert,Priority
+1.0.0,LOW,0.0,0.3,ALLOW,False,4
+1.0.0,MEDIUM,0.3,0.6,STEP_UP_VERIFY,False,3
+1.0.0,HIGH,0.6,0.85,HOLD_AND_REVIEW,True,2
+1.0.0,CRITICAL,0.85,1.0,BLOCK_AND_ALERT,True,1
