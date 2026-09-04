@@ -1,0 +1,525 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Fraud Detection Dashboard</title>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🛡️</text></svg>">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+<style>
+/* ── Tokens ─────────────────────────────────────── */
+:root{
+  --bg: #f9f9f7;
+  --surface: #fcfcfb;
+  --surface-raised: #ffffff;
+  --text: #0b0b0b;
+  --text-secondary: #52514e;
+  --text-muted: #898781;
+  --border: rgba(11,11,11,0.08);
+  --border-strong: rgba(11,11,11,0.14);
+  --grid: #e1e0d9;
+  --accent: #2a78d6;
+  --accent-light: #dbeafe;
+  --series-1: #2a78d6;
+  --series-2: #eb6834;
+  --series-3: #1baf7a;
+  --series-4: #eda100;
+  --series-5: #e87ba4;
+  --status-good: #0ca30c;
+  --status-warning: #d97706;
+  --status-serious: #ec835a;
+  --status-critical: #d03b3b;
+  --radius: 8px;
+  --radius-lg: 12px;
+  --shadow: 0 1px 3px rgba(0,0,0,0.04), 0 1px 2px rgba(0,0,0,0.06);
+}
+@media(prefers-color-scheme:dark){
+  :root:not([data-theme="light"]){
+    --bg: #0d0d0d;
+    --surface: #1a1a19;
+    --surface-raised: #222220;
+    --text: #ffffff;
+    --text-secondary: #c3c2b7;
+    --text-muted: #898781;
+    --border: rgba(255,255,255,0.08);
+    --border-strong: rgba(255,255,255,0.14);
+    --grid: #2c2c2a;
+    --accent: #3987e5;
+    --accent-light: rgba(57,135,229,0.15);
+    --series-1: #3987e5;
+    --series-2: #d95926;
+    --series-3: #199e70;
+    --series-4: #c98500;
+    --series-5: #d55181;
+    --status-good: #0ca30c;
+    --status-warning: #fab219;
+    --status-serious: #ec835a;
+    --status-critical: #e66767;
+    --shadow: 0 1px 3px rgba(0,0,0,0.3);
+  }
+}
+:root[data-theme="dark"]{
+  --bg: #0d0d0d;
+  --surface: #1a1a19;
+  --surface-raised: #222220;
+  --text: #ffffff;
+  --text-secondary: #c3c2b7;
+  --text-muted: #898781;
+  --border: rgba(255,255,255,0.08);
+  --border-strong: rgba(255,255,255,0.14);
+  --grid: #2c2c2a;
+  --accent: #3987e5;
+  --accent-light: rgba(57,135,229,0.15);
+  --series-1: #3987e5;
+  --series-2: #d95926;
+  --series-3: #199e70;
+  --series-4: #c98500;
+  --series-5: #d55181;
+  --status-good: #0ca30c;
+  --status-warning: #fab219;
+  --status-serious: #ec835a;
+  --status-critical: #e66767;
+  --shadow: 0 1px 3px rgba(0,0,0,0.3);
+}
+
+/* ── Reset & Base ─────────────────────────────── */
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+body{
+  font-family: system-ui,-apple-system,"Segoe UI",sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
+}
+a{color:var(--accent);text-decoration:none}
+a:hover{text-decoration:underline}
+
+/* ── Layout ─────────────────────────────────────── */
+.page{max-width:1200px;margin:0 auto;padding:24px 20px 60px}
+.header{margin-bottom:28px}
+.header h1{font-size:1.5rem;font-weight:700;letter-spacing:-0.01em;text-wrap:balance}
+.header p{color:var(--text-secondary);font-size:0.88rem;margin-top:4px}
+.row{display:grid;gap:16px;margin-bottom:20px}
+.row-4{grid-template-columns:repeat(4,1fr)}
+.row-3{grid-template-columns:repeat(3,1fr)}
+.row-2{grid-template-columns:1fr 1fr}
+.row-1{grid-template-columns:1fr}
+@media(max-width:900px){.row-4,.row-3,.row-2{grid-template-columns:repeat(2,1fr)}}
+@media(max-width:560px){.row-4,.row-3,.row-2{grid-template-columns:1fr}}
+
+/* ── Cards ─────────────────────────────────────── */
+.card{
+  background: var(--surface-raised);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  padding: 20px;
+  box-shadow: var(--shadow);
+}
+.card-title{
+  font-size: 0.78rem;
+  font-weight: 600;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  margin-bottom: 8px;
+}
+.hero-value{
+  font-size: 1.9rem;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+  letter-spacing: -0.02em;
+  line-height: 1.15;
+}
+.hero-sub{font-size:0.82rem;color:var(--text-secondary);margin-top:4px}
+.accent{color:var(--accent)}
+.good{color:var(--status-good)}
+.warn{color:var(--status-warning)}
+.serious{color:var(--status-serious)}
+.critical{color:var(--status-critical)}
+
+/* ── Stat Badges ─────────────────────────────── */
+.badge{
+  display:inline-block;
+  padding: 2px 8px;
+  border-radius: 99px;
+  font-size: 0.72rem;
+  font-weight: 600;
+  line-height: 1.4;
+}
+.badge-good{background:rgba(12,163,12,0.12);color:var(--status-good)}
+.badge-critical{background:rgba(208,59,59,0.12);color:var(--status-critical)}
+.badge-neutral{background:var(--border);color:var(--text-secondary)}
+
+/* ── Section Headers ─────────────────────────── */
+.section-title{
+  font-size: 1.05rem;
+  font-weight: 700;
+  margin-bottom: 14px;
+  padding-top: 8px;
+}
+.section-title span{color:var(--text-muted);font-weight:400;font-size:0.82rem;margin-left:8px}
+
+/* ── Confusion Matrix ──────────────────────── */
+.cm-grid{display:grid;grid-template-columns:auto 1fr 1fr;grid-template-rows:auto 1fr 1fr;gap:2px;max-width:320px;margin:0 auto}
+.cm-header{font-size:0.7rem;font-weight:600;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.04em;display:flex;align-items:center;justify-content:center;padding:6px}
+.cm-cell{
+  display:flex;align-items:center;justify-content:center;
+  border-radius:var(--radius);
+  padding:16px 12px;
+  font-size:1.25rem;font-weight:700;
+  font-variant-numeric:tabular-nums;
+  color:#fff;
+}
+.cm-tn{background:var(--series-3)}
+.cm-fp{background:var(--status-warning)}
+.cm-fn{background:var(--status-serious)}
+.cm-tp{background:var(--status-critical)}
+.cm-label{font-size:0.65rem;color:rgba(255,255,255,0.85);display:block;margin-top:2px;font-weight:500}
+
+/* ── Risk Policy Table ───────────────────────── */
+.risk-table{width:100%;border-collapse:collapse;font-size:0.82rem}
+.risk-table th{
+  text-align:left;padding:8px 12px;
+  border-bottom:2px solid var(--border-strong);
+  font-weight:600;color:var(--text-secondary);font-size:0.72rem;
+  text-transform:uppercase;letter-spacing:0.03em;
+}
+.risk-table td{padding:8px 12px;border-bottom:1px solid var(--border)}
+.risk-table tr:last-child td{border-bottom:none}
+.risk-dot{
+  display:inline-block;width:8px;height:8px;border-radius:50%;margin-right:6px;vertical-align:middle;
+}
+
+/* ── Chart containers ──────────────────────── */
+.chart-box{position:relative;width:100%;min-height:220px}
+
+/* ── Theme Toggle ──────────────────────────── */
+.theme-toggle{
+  position:fixed;top:16px;right:16px;
+  background:var(--surface-raised);border:1px solid var(--border);
+  border-radius:99px;padding:4px 12px;
+  font-size:0.78rem;color:var(--text-secondary);
+  cursor:pointer;z-index:10;
+  font-family:inherit;
+}
+.theme-toggle:hover{border-color:var(--border-strong)}
+
+/* ── Footer ─────────────────────────────── */
+.footer{
+  text-align:center;padding:32px 0 8px;
+  font-size:0.78rem;color:var(--text-muted);
+  border-top:1px solid var(--border);margin-top:32px;
+}
+</style>
+</head>
+<body>
+<button class="theme-toggle" onclick="toggleTheme()" aria-label="Toggle theme">Theme</button>
+
+<div class="page">
+  <header class="header">
+    <h1>Fraud Detection Data Mart — Dashboard</h1>
+    <p>PaySim Synthetic Dataset · Random Forest v1.0.0 · Threshold 0.32 · Data as of 2026-09</p>
+  </header>
+
+  <!-- ═══════════════ HERO KPIs ═══════════════ -->
+  <div class="row row-4">
+    <div class="card">
+      <div class="card-title">Total Transactions</div>
+      <div class="hero-value">6,362,620</div>
+      <div class="hero-sub">Simulated financial transactions</div>
+    </div>
+    <div class="card">
+      <div class="card-title">Total Amount</div>
+      <div class="hero-value">1.14T</div>
+      <div class="hero-sub">$1,144,392,944,759.77</div>
+    </div>
+    <div class="card">
+      <div class="card-title">Fraud Transactions</div>
+      <div class="hero-value critical">8,213</div>
+      <div class="hero-sub">0.129% fraud rate · 1.054% of total amount</div>
+    </div>
+    <div class="card">
+      <div class="card-title">Active Alerts</div>
+      <div class="hero-value warn">8,218</div>
+      <div class="hero-sub">HIGH 46 · CRITICAL 8,172</div>
+    </div>
+  </div>
+
+  <!-- ═══════════════ ML METRICS ═══════════════ -->
+  <div class="row row-4">
+    <div class="card">
+      <div class="card-title">Precision</div>
+      <div class="hero-value accent">0.999</div>
+      <div class="hero-sub">1,251 TP · 1 FP</div>
+    </div>
+    <div class="card">
+      <div class="card-title">Recall</div>
+      <div class="hero-value accent">0.999</div>
+      <div class="hero-sub">Target ≥ 0.80</div>
+    </div>
+    <div class="card">
+      <div class="card-title">F2-Score</div>
+      <div class="hero-value accent">0.999</div>
+      <div class="hero-sub">Target ≥ 0.70</div>
+    </div>
+    <div class="card">
+      <div class="card-title">PR-AUC</div>
+      <div class="hero-value accent">0.999</div>
+      <div class="hero-sub">Near-perfect (synthetic data)</div>
+    </div>
+  </div>
+
+  <!-- ═══════════════ FRAUD CHARTS ═══════════════ -->
+  <h2 class="section-title">Transaction Analysis <span>· Fraud Distribution</span></h2>
+  <div class="row row-2">
+    <div class="card">
+      <div class="card-title">Fraud by Transaction Type</div>
+      <div class="chart-box"><canvas id="chartType"></canvas></div>
+    </div>
+    <div class="card">
+      <div class="card-title">Fraud by Amount Band</div>
+      <div class="chart-box"><canvas id="chartBand"></canvas></div>
+    </div>
+  </div>
+  <div class="row row-2">
+    <div class="card">
+      <div class="card-title">Fraud Count by Simulation Day</div>
+      <div class="chart-box"><canvas id="chartDay"></canvas></div>
+    </div>
+    <div class="card">
+      <div class="card-title">Fraud by Time Slot</div>
+      <div class="chart-box"><canvas id="chartSlot"></canvas></div>
+    </div>
+  </div>
+
+  <!-- ═══════════════ MODEL + RISK ═══════════════ -->
+  <h2 class="section-title">Model Performance <span>· Random Forest v1.0.0 · TEST split</span></h2>
+  <div class="row row-2">
+    <div class="card" style="display:flex;flex-direction:column;align-items:center;justify-content:center">
+      <div class="card-title">Confusion Matrix</div>
+      <div class="cm-grid" style="margin-top:8px">
+        <div class="cm-header"></div>
+        <div class="cm-header">Pred: 0</div>
+        <div class="cm-header">Pred: 1</div>
+        <div class="cm-header" style="writing-mode:horizontal-tb">Actual: 0</div>
+        <div class="cm-cell cm-tn">88,213<span class="cm-label">TN</span></div>
+        <div class="cm-cell cm-fp">1<span class="cm-label">FP</span></div>
+        <div class="cm-header" style="writing-mode:horizontal-tb">Actual: 1</div>
+        <div class="cm-cell cm-fn">1<span class="cm-label">FN</span></div>
+        <div class="cm-cell cm-tp">1,251<span class="cm-label">TP</span></div>
+      </div>
+      <div style="margin-top:12px;font-size:0.82rem;color:var(--text-secondary);text-align:center">
+        Fraud Amount Capture Rate <strong class="good">99.98%</strong>
+        <br><span style="font-size:0.75rem;color:var(--text-muted)">Missed: $399,045 · Captured: $2,129,729,633</span>
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-title">Risk Policy (v1.0.0)</div>
+      <table class="risk-table">
+        <thead><tr><th>Risk Level</th><th>Score Range</th><th>Alert</th><th>Action</th></tr></thead>
+        <tbody>
+          <tr><td><span class="risk-dot" style="background:var(--series-3)"></span>LOW</td><td>[0.00, 0.30)</td><td><span class="badge badge-neutral">No</span></td><td>Allow</td></tr>
+          <tr><td><span class="risk-dot" style="background:var(--series-4)"></span>MEDIUM</td><td>[0.30, 0.60)</td><td><span class="badge badge-neutral">No</span></td><td>Step-up verify</td></tr>
+          <tr><td><span class="risk-dot" style="background:var(--status-warning)"></span>HIGH</td><td>[0.60, 0.85)</td><td><span class="badge badge-critical">Yes</span></td><td>Review within 24h</td></tr>
+          <tr><td><span class="risk-dot" style="background:var(--status-critical)"></span>CRITICAL</td><td>[0.85, 1.00]</td><td><span class="badge badge-critical">Yes</span></td><td>Immediate investigation</td></tr>
+        </tbody>
+      </table>
+      <div style="margin-top:16px">
+        <div class="card-title">Risk Level Distribution</div>
+        <div class="chart-box" style="min-height:160px"><canvas id="chartRisk"></canvas></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══════════════ ETL QUALITY ═══════════════ -->
+  <h2 class="section-title">ETL Quality <span>· Data Pipeline Health</span></h2>
+  <div class="row row-3">
+    <div class="card">
+      <div class="card-title">Reconciliation Rate</div>
+      <div class="hero-value good">100%</div>
+      <div class="hero-sub">Source rows = Fact rows · 0 orphan FK</div>
+    </div>
+    <div class="card">
+      <div class="card-title">Validation Error Rate</div>
+      <div class="hero-value good">0.00%</div>
+      <div class="hero-sub">0 rejected rows across 32 chunks</div>
+    </div>
+    <div class="card">
+      <div class="card-title">EDA Comparison</div>
+      <div class="hero-value accent">140/141</div>
+      <div class="hero-sub">99.3% PASS · 1 float-precision delta</div>
+    </div>
+  </div>
+
+  <footer class="footer">
+    PaySim Fraud Detection Data Mart · Data Warehouse Course Project · 2026
+  </footer>
+</div>
+
+<script>
+// ── Theme toggle ────────────────────────────────
+function toggleTheme(){
+  const r=document.documentElement;
+  const cur=r.getAttribute('data-theme');
+  r.setAttribute('data-theme',cur==='dark'?'light':'dark');
+}
+
+// ── Chart.js defaults ───────────────────────────
+const cs=getComputedStyle(document.documentElement);
+function g(k){return cs.getPropertyValue(k).trim()}
+const FONT='system-ui,-apple-system,"Segoe UI",sans-serif';
+
+function chartColors(){
+  return{
+    text:g('--text-secondary'),
+    muted:g('--text-muted'),
+    grid:g('--grid'),
+    series:[g('--series-1'),g('--series-2'),g('--series-3'),g('--series-4'),g('--series-5')],
+    statusGood:g('--status-good'),statusCritical:g('--status-critical'),
+  }
+}
+const CC=chartColors();
+
+const BASE_OPTS={
+  responsive:true,maintainAspectRatio:false,
+  plugins:{legend:{display:false},tooltip:{backgroundColor:'rgba(11,11,11,0.88)',titleFont:{family:FONT,size:12},bodyFont:{family:FONT,size:12},padding:10,cornerRadius:6,displayColors:false}},
+  scales:{x:{grid:{display:false},ticks:{font:{family:FONT,size:11},color:CC.muted}},y:{grid:{color:CC.grid},ticks:{font:{family:FONT,size:11},color:CC.muted},beginAtZero:true}}
+};
+
+// ── Data ────────────────────────────────────────
+const TYPE_LABELS=['CASH_OUT','CASH_IN','TRANSFER','PAYMENT','DEBIT'];
+const TYPE_TRANSACTIONS=[2237500,1399284,532909,2151495,41432];
+const TYPE_FRAUD=[4116,0,4097,0,0];
+
+const BAND_LABELS=['XS (<1K)','S (1K-10K)','M (10K-100K)','L (100K-1M)','XL (1M-10M)','XXL (>10M)'];
+const BAND_TRANSACTIONS=[142642,1143361,2239253,2706738,124976,5650];
+const BAND_FRAUD=[5,212,1998,3800,1891,307];
+
+const DAY_LABELS=Array.from({length:31},(_,i)=>String(i+1));
+const DAY_FRAUD=[194,260,299,354,249,258,248,319,339,325,339,285,278,318,326,347,379,255,279,276,304,272,291,249,240,257,271,309,233,253,228];
+
+const SLOT_LABELS=['LATE_NIGHT (22-0)','NIGHT (0-6)','MORNING (6-12)','AFTERNOON (12-18)','EVENING (18-22)'];
+const SLOT_FRAUD=[431,1336,2478,2354,1614];
+
+const RISK_LABELS=['LOW','MEDIUM','HIGH','CRITICAL'];
+const RISK_COUNTS=[6354165,237,46,8172];
+
+// ── Charts ──────────────────────────────────────
+// Type chart
+new Chart(document.getElementById('chartType'),{
+  type:'bar',
+  data:{
+    labels:TYPE_LABELS,
+    datasets:[
+      {label:'Transactions (K)',data:TYPE_TRANSACTIONS.map(v=>Math.round(v/1000)),backgroundColor:CC.series[0]+'44',borderColor:CC.series[0],borderWidth:1.5,borderRadius:4,barPercentage:0.55},
+      {label:'Fraud',data:TYPE_FRAUD,backgroundColor:CC.statusCritical+'cc',borderColor:CC.statusCritical,borderWidth:1.5,borderRadius:4,barPercentage:0.55}
+    ]
+  },
+  options:{...BASE_OPTS,
+    plugins:{...BASE_OPTS.plugins,legend:{display:true,position:'top',labels:{font:{family:FONT,size:11},color:CC.muted,boxWidth:10,padding:12}}},
+    scales:{...BASE_OPTS.scales,y:{...BASE_OPTS.scales.y,
+      ticks:{...BASE_OPTS.scales.y.ticks,
+        callback:v=>v>=1000?Math.round(v/1000)+'K':v
+      }}
+    }
+  }
+});
+
+// Band chart
+new Chart(document.getElementById('chartBand'),{
+  type:'bar',
+  data:{
+    labels:BAND_LABELS,
+    datasets:[
+      {label:'Transactions (K)',data:BAND_TRANSACTIONS.map(v=>Math.round(v/1000)),backgroundColor:CC.series[0]+'44',borderColor:CC.series[0],borderWidth:1.5,borderRadius:4,barPercentage:0.55},
+      {label:'Fraud',data:BAND_FRAUD,backgroundColor:CC.statusCritical+'cc',borderColor:CC.statusCritical,borderWidth:1.5,borderRadius:4,barPercentage:0.55}
+    ]
+  },
+  options:{...BASE_OPTS,
+    plugins:{...BASE_OPTS.plugins,legend:{display:true,position:'top',labels:{font:{family:FONT,size:11},color:CC.muted,boxWidth:10,padding:12}}},
+    scales:{...BASE_OPTS.scales,y:{...BASE_OPTS.scales.y,
+      ticks:{...BASE_OPTS.scales.y.ticks,
+        callback:v=>v>=1000?Math.round(v/1000)+'K':v
+      }}
+    }
+  }
+});
+
+// Day chart (line)
+new Chart(document.getElementById('chartDay'),{
+  type:'line',
+  data:{
+    labels:DAY_LABELS,
+    datasets:[{
+      label:'Fraud Count',
+      data:DAY_FRAUD,
+      borderColor:CC.series[1],
+      backgroundColor:CC.series[1]+'18',
+      fill:true,
+      tension:0.3,
+      borderWidth:2,
+      pointRadius:2,
+      pointHoverRadius:5,
+    }]
+  },
+  options:{...BASE_OPTS,
+    scales:{
+      x:{...BASE_OPTS.scales.x,title:{display:true,text:'Simulation Day',font:{family:FONT,size:11},color:CC.muted}},
+      y:{...BASE_OPTS.scales.y,title:{display:true,text:'Fraud Count',font:{family:FONT,size:11},color:CC.muted}}
+    }
+  }
+});
+
+// Time slot chart (horizontal bar)
+new Chart(document.getElementById('chartSlot'),{
+  type:'bar',
+  data:{
+    labels:SLOT_LABELS,
+    datasets:[{
+      label:'Fraud Count',
+      data:SLOT_FRAUD,
+      backgroundColor:[CC.series[4],CC.series[0],CC.series[3],CC.series[2],CC.series[1]],
+      borderRadius:4,
+      barPercentage:0.6,
+    }]
+  },
+  options:{
+    indexAxis:'y',
+    responsive:true,maintainAspectRatio:false,
+    plugins:{legend:{display:false}},
+    scales:{
+      x:{grid:{color:CC.grid},ticks:{font:{family:FONT,size:11},color:CC.muted},beginAtZero:true},
+      y:{grid:{display:false},ticks:{font:{family:FONT,size:11},color:CC.muted}}
+    }
+  }
+});
+
+// Risk level donut
+new Chart(document.getElementById('chartRisk'),{
+  type:'doughnut',
+  data:{
+    labels:RISK_LABELS,
+    datasets:[{
+      data:RISK_COUNTS,
+      backgroundColor:[CC.series[2],CC.series[3],g('--status-warning'),CC.statusCritical],
+      borderColor:'var(--surface-raised)',
+      borderWidth:3,
+      hoverOffset:6,
+    }]
+  },
+  options:{
+    responsive:true,maintainAspectRatio:false,
+    cutout:'55%',
+    plugins:{
+      legend:{display:true,position:'right',labels:{font:{family:FONT,size:11},color:CC.muted,boxWidth:10,padding:8}},
+      tooltip:{callbacks:{label:ctx=>{
+        const v=ctx.raw.toLocaleString();
+        const pct=(ctx.raw/6362620*100).toFixed(2);
+        return `${ctx.label}: ${v} (${pct}%)`;
+      }}}
+    }
+  }
+});
+</script>
+</body>
+</html>
