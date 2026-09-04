@@ -11,7 +11,6 @@ if str(_repo) not in sys.path:
     sys.path.insert(0, str(_repo))
 
 from src.common.database import execute, get_connection
-from dashboard.streamlit.components.filters import load_sidebar_filters
 
 
 def db_query(sql: str, params: tuple = ()) -> pd.DataFrame:
@@ -25,18 +24,8 @@ def db_query(sql: str, params: tuple = ()) -> pd.DataFrame:
         conn.close()
 
 
-def db_execute(sql: str, params: tuple = ()) -> None:
-    conn = get_connection()
-    try:
-        execute(conn, sql, params)
-    finally:
-        conn.close()
-
-
 st.title("Alert Queue")
 st.caption("Review and act on HIGH / CRITICAL fraud alerts")
-
-filters = load_sidebar_filters()
 
 # Summary strip
 summary_sql = """
@@ -47,11 +36,8 @@ summary_sql = """
         SUM(CASE WHEN AnalystDecision = 'UNDER_INVESTIGATION' THEN 1 ELSE 0 END) AS under_inv,
         SUM(CASE WHEN AnalystDecision IS NULL THEN 1 ELSE 0 END) AS open_count
     FROM bi.vw_AlertQueue
-    WHERE StepDay BETWEEN ? AND ?
-      AND TypeCode IN ({})
-""".format(",".join(f"'{t}'" for t in filters.type_codes))
-
-s = db_query(summary_sql, (filters.step_day_min, filters.step_day_max)).iloc[0]
+"""
+s = db_query(summary_sql).iloc[0]
 c1, c2, c3, c4, c5 = st.columns(5)
 c1.metric("Total Alerts", f"{int(s['total']):,}")
 c2.metric("Confirmed Fraud", f"{int(s['confirmed']):,}")
@@ -61,7 +47,7 @@ c5.metric("Open", f"{int(s['open_count']):,}")
 
 st.divider()
 
-# Filters for alert queue
+# Filters
 col_f1, col_f2 = st.columns(2)
 with col_f1:
     risk_filter = st.multiselect(
@@ -70,21 +56,15 @@ with col_f1:
 with col_f2:
     decision_filter = st.multiselect(
         "Decision",
-        ["CONFIRMED_FRAUD", "FALSE_POSITIVE", "UNDER_INVESTIGATION", None],
-        default=None,
-        format_func=lambda x: x if x else "Open",
+        ["CONFIRMED_FRAUD", "FALSE_POSITIVE", "UNDER_INVESTIGATION"],
+        default=[],
     )
 
 # Build query
 risk_list = ",".join(f"'{r}'" for r in risk_filter)
-type_list = ",".join(f"'{t}'" for t in filters.type_codes)
-where_parts = [
-    f"StepDay BETWEEN {filters.step_day_min} AND {filters.step_day_max}",
-    f"TypeCode IN ({type_list})",
-    f"RiskLevel IN ({risk_list})",
-]
+where_parts = [f"RiskLevel IN ({risk_list})"]
 if decision_filter:
-    dec_list = ",".join(f"'{d}'" for d in decision_filter if d)
+    dec_list = ",".join(f"'{d}'" for d in decision_filter)
     where_parts.append(f"ISNULL(AnalystDecision, 'OPEN') IN ({dec_list})")
 where = " AND ".join(where_parts)
 
@@ -128,13 +108,11 @@ st.subheader("Submit Analyst Feedback")
 
 if not alerts.empty:
     alert_options = {
-        f"#{int(r['AlertKey'])} | Txn {int(r['TransactionKey'])} | {r['RiskLevel']} | {r['AlertLevel']} | Score {r['FraudScore']:.4f}": int(r["AlertKey"])
+        f"#{int(r['AlertKey'])} | Txn {int(r['TransactionKey'])} | {r['RiskLevel']} | Score {r['FraudScore']:.4f}": int(r["AlertKey"])
         for _, r in alerts.iterrows()
     }
     selected_label = st.selectbox("Select Alert", list(alert_options.keys()))
     selected_key = alert_options[selected_label]
-
-    selected_row = alerts[alerts["AlertKey"] == selected_key].iloc[0]
 
     with st.form("feedback_form"):
         decision = st.radio(
@@ -150,8 +128,14 @@ if not alerts.empty:
             if not reviewer.strip():
                 st.error("Please enter analyst name.")
             else:
+                status_map = {
+                    "CONFIRMED_FRAUD": "RESOLVED",
+                    "FALSE_POSITIVE": "FALSE_POSITIVE",
+                    "UNDER_INVESTIGATION": "IN_REVIEW",
+                }
                 try:
-                    db_execute(
+                    execute(
+                        get_connection(),
                         """
                         UPDATE fact.FactAlert
                         SET AnalystDecision = ?,
@@ -161,19 +145,11 @@ if not alerts.empty:
                             ReviewedAt = SYSDATETIME()
                         WHERE AlertKey = ?
                         """,
-                        (
-                            decision,
-                            "RESOLVED" if decision == "CONFIRMED_FRAUD"
-                            else "FALSE_POSITIVE" if decision == "FALSE_POSITIVE"
-                            else "IN_REVIEW",
-                            comment or None,
-                            reviewer.strip(),
-                            selected_key,
-                        ),
+                        (decision, status_map[decision], comment or None, reviewer.strip(), selected_key),
                     )
                     st.success(f"Feedback submitted for Alert #{selected_key}.")
                     st.rerun()
                 except Exception as e:
-                    st.error(f"Failed to submit feedback: {e}")
+                    st.error(f"Failed: {e}")
 else:
     st.info("No alerts available for feedback.")
