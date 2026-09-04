@@ -94,20 +94,51 @@ body{
 a{color:var(--accent);text-decoration:none}
 a:hover{text-decoration:underline}
 
-/* ── Layout ─────────────────────────────────────── */
-.page{max-width:1200px;margin:0 auto;padding:24px 20px 60px}
-.header{margin-bottom:28px}
-.header h1{font-size:1.5rem;font-weight:700;letter-spacing:-0.01em;text-wrap:balance}
-.header p{color:var(--text-secondary);font-size:0.88rem;margin-top:4px}
-.row{display:grid;gap:16px;margin-bottom:20px}
-.row-4{grid-template-columns:repeat(4,1fr)}
-.row-3{grid-template-columns:repeat(3,1fr)}
-.row-2{grid-template-columns:1fr 1fr}
-.row-1{grid-template-columns:1fr}
-@media(max-width:900px){.row-4,.row-3,.row-2{grid-template-columns:repeat(2,1fr)}}
-@media(max-width:560px){.row-4,.row-3,.row-2{grid-template-columns:1fr}}
+/* ── Page Shell ─────────────────────────────── */
+.shell{max-width:1280px;margin:0 auto;padding:0 20px 60px}
 
-/* ── Cards ─────────────────────────────────────── */
+/* ── Top Bar ───────────────────────────────── */
+.topbar{
+  display:flex;align-items:center;justify-content:space-between;
+  padding:16px 0;border-bottom:1px solid var(--border);margin-bottom:0;
+  position:sticky;top:0;z-index:20;background:var(--bg);
+}
+.topbar-title{font-size:1.1rem;font-weight:700;letter-spacing:-0.01em;white-space:nowrap}
+.topbar-meta{font-size:0.75rem;color:var(--text-muted);white-space:nowrap}
+.theme-toggle{
+  background:var(--surface-raised);border:1px solid var(--border);
+  border-radius:99px;padding:4px 12px;
+  font-size:0.78rem;color:var(--text-secondary);
+  cursor:pointer;font-family:inherit;
+}
+.theme-toggle:hover{border-color:var(--border-strong)}
+
+/* ── Tab Navigation ─────────────────────────── */
+.tab-nav{
+  display:flex;gap:0;
+  border-bottom:2px solid var(--border);
+  margin-top:4px;overflow-x:auto;
+  scrollbar-width:none;
+}
+.tab-nav::-webkit-scrollbar{display:none}
+.tab-btn{
+  padding:10px 18px;
+  font-size:0.82rem;font-weight:600;
+  color:var(--text-muted);
+  background:none;border:none;
+  border-bottom:2px solid transparent;
+  margin-bottom:-2px;
+  cursor:pointer;white-space:nowrap;
+  font-family:inherit;transition:color .15s,border-color .15s;
+}
+.tab-btn:hover{color:var(--text-secondary)}
+.tab-btn.active{color:var(--accent);border-bottom-color:var(--accent)}
+
+/* ── Tab Panels ─────────────────────────────── */
+.tab-panel{display:none;padding-top:24px}
+.tab-panel.active{display:block}
+
+/* ── Cards ──────────────────────────────────── */
 .card{
   background: var(--surface-raised);
   border: 1px solid var(--border);
@@ -137,7 +168,7 @@ a:hover{text-decoration:underline}
 .serious{color:var(--status-serious)}
 .critical{color:var(--status-critical)}
 
-/* ── Stat Badges ─────────────────────────────── */
+/* ── Stat Badges ────────────────────────────── */
 .badge{
   display:inline-block;
   padding: 2px 8px;
@@ -148,9 +179,11 @@ a:hover{text-decoration:underline}
 }
 .badge-good{background:rgba(12,163,12,0.12);color:var(--status-good)}
 .badge-critical{background:rgba(208,59,59,0.12);color:var(--status-critical)}
+.badge-warn{background:rgba(217,119,6,0.12);color:var(--status-warning)}
 .badge-neutral{background:var(--border);color:var(--text-secondary)}
+.badge-info{background:var(--accent-light);color:var(--accent)}
 
-/* ── Section Headers ─────────────────────────── */
+/* ── Section Headers ────────────────────────── */
 .section-title{
   font-size: 1.05rem;
   font-weight: 700;
@@ -159,14 +192,23 @@ a:hover{text-decoration:underline}
 }
 .section-title span{color:var(--text-muted);font-weight:400;font-size:0.82rem;margin-left:8px}
 
+/* ── Grid Layouts ───────────────────────────── */
+.row{display:grid;gap:16px;margin-bottom:20px}
+.row-4{grid-template-columns:repeat(4,1fr)}
+.row-3{grid-template-columns:repeat(3,1fr)}
+.row-2{grid-template-columns:1fr 1fr}
+.row-1{grid-template-columns:1fr}
+@media(max-width:900px){.row-4,.row-3,.row-2{grid-template-columns:repeat(2,1fr)}}
+@media(max-width:560px){.row-4,.row-3,.row-2{grid-template-columns:1fr}}
+
 /* ── Confusion Matrix ──────────────────────── */
-.cm-grid{display:grid;grid-template-columns:auto 1fr 1fr;grid-template-rows:auto 1fr 1fr;gap:2px;max-width:320px;margin:0 auto}
+.cm-grid{display:grid;grid-template-columns:auto 1fr 1fr;grid-template-rows:auto 1fr 1fr;gap:2px;max-width:300px;margin:0 auto}
 .cm-header{font-size:0.7rem;font-weight:600;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.04em;display:flex;align-items:center;justify-content:center;padding:6px}
 .cm-cell{
-  display:flex;align-items:center;justify-content:center;
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
   border-radius:var(--radius);
-  padding:16px 12px;
-  font-size:1.25rem;font-weight:700;
+  padding:14px 10px;
+  font-size:1.2rem;font-weight:700;
   font-variant-numeric:tabular-nums;
   color:#fff;
 }
@@ -174,9 +216,9 @@ a:hover{text-decoration:underline}
 .cm-fp{background:var(--status-warning)}
 .cm-fn{background:var(--status-serious)}
 .cm-tp{background:var(--status-critical)}
-.cm-label{font-size:0.65rem;color:rgba(255,255,255,0.85);display:block;margin-top:2px;font-weight:500}
+.cm-label{font-size:0.62rem;color:rgba(255,255,255,0.85);margin-top:2px;font-weight:500}
 
-/* ── Risk Policy Table ───────────────────────── */
+/* ── Risk Policy Table ──────────────────────── */
 .risk-table{width:100%;border-collapse:collapse;font-size:0.82rem}
 .risk-table th{
   text-align:left;padding:8px 12px;
@@ -190,21 +232,75 @@ a:hover{text-decoration:underline}
   display:inline-block;width:8px;height:8px;border-radius:50%;margin-right:6px;vertical-align:middle;
 }
 
+/* ── Alert Table ────────────────────────────── */
+.alert-table{width:100%;border-collapse:collapse;font-size:0.82rem}
+.alert-table th{
+  text-align:left;padding:10px 12px;
+  border-bottom:2px solid var(--border-strong);
+  font-weight:600;color:var(--text-secondary);font-size:0.72rem;
+  text-transform:uppercase;letter-spacing:0.03em;
+  position:sticky;top:0;background:var(--surface-raised);
+}
+.alert-table td{padding:10px 12px;border-bottom:1px solid var(--border);font-variant-numeric:tabular-nums}
+.alert-table tr:hover td{background:var(--accent-light)}
+.alert-table-scroll{max-height:480px;overflow-y:auto;border:1px solid var(--border);border-radius:var(--radius-lg)}
+
+/* ── Feedback Form ──────────────────────────── */
+.feedback-card{border-left:3px solid var(--accent)}
+.form-row{display:flex;gap:12px;align-items:flex-end;flex-wrap:wrap;margin-top:12px}
+.form-group{display:flex;flex-direction:column;gap:4px;flex:1;min-width:160px}
+.form-label{font-size:0.75rem;font-weight:600;color:var(--text-secondary)}
+.form-select,.form-input,.form-textarea{
+  padding:8px 10px;border:1px solid var(--border);border-radius:var(--radius);
+  font-family:inherit;font-size:0.82rem;color:var(--text);
+  background:var(--surface);
+}
+.form-select:focus,.form-input:focus,.form-textarea:focus{
+  outline:none;border-color:var(--accent);box-shadow:0 0 0 2px var(--accent-light);
+}
+.form-textarea{resize:vertical;min-height:60px}
+.btn{
+  padding:8px 18px;border-radius:var(--radius);font-size:0.82rem;font-weight:600;
+  cursor:pointer;font-family:inherit;border:none;transition:opacity .15s;
+}
+.btn-primary{background:var(--accent);color:#fff}
+.btn-primary:hover{opacity:0.88}
+.btn-secondary{background:var(--surface);border:1px solid var(--border);color:var(--text-secondary)}
+.btn-secondary:hover{border-color:var(--border-strong)}
+
+/* ── Drill-through ──────────────────────────── */
+.search-bar{
+  display:flex;gap:12px;align-items:center;margin-bottom:20px;
+}
+.search-input{
+  flex:1;padding:10px 14px;border:1px solid var(--border);border-radius:var(--radius-lg);
+  font-size:0.88rem;font-family:inherit;color:var(--text);background:var(--surface);
+}
+.search-input:focus{outline:none;border-color:var(--accent);box-shadow:0 0 0 2px var(--accent-light)}
+.detail-grid{display:grid;grid-template-columns:160px 1fr;gap:0;font-size:0.82rem;border:1px solid var(--border);border-radius:var(--radius-lg);overflow:hidden}
+.detail-label{
+  padding:10px 14px;background:var(--surface);font-weight:600;color:var(--text-secondary);
+  border-bottom:1px solid var(--border);
+}
+.detail-value{
+  padding:10px 14px;border-bottom:1px solid var(--border);font-variant-numeric:tabular-nums;
+}
+.detail-value:last-child,.detail-label:last-of-type{border-bottom:none}
+
+/* ── KPI Summary Strip ──────────────────────── */
+.kpi-strip{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:20px}
+.kpi-chip{
+  display:flex;align-items:center;gap:6px;
+  padding:6px 14px;border-radius:99px;
+  font-size:0.78rem;font-weight:600;
+  background:var(--surface);border:1px solid var(--border);
+}
+.kpi-chip-val{font-variant-numeric:tabular-nums}
+
 /* ── Chart containers ──────────────────────── */
 .chart-box{position:relative;width:100%;min-height:220px}
 
-/* ── Theme Toggle ──────────────────────────── */
-.theme-toggle{
-  position:fixed;top:16px;right:16px;
-  background:var(--surface-raised);border:1px solid var(--border);
-  border-radius:99px;padding:4px 12px;
-  font-size:0.78rem;color:var(--text-secondary);
-  cursor:pointer;z-index:10;
-  font-family:inherit;
-}
-.theme-toggle:hover{border-color:var(--border-strong)}
-
-/* ── Footer ─────────────────────────────── */
+/* ── Footer ─────────────────────────────────── */
 .footer{
   text-align:center;padding:32px 0 8px;
   font-size:0.78rem;color:var(--text-muted);
@@ -213,30 +309,49 @@ a:hover{text-decoration:underline}
 </style>
 </head>
 <body>
-<button class="theme-toggle" onclick="toggleTheme()" aria-label="Toggle theme">Theme</button>
 
-<div class="page">
-  <header class="header">
-    <h1>Fraud Detection Data Mart — Dashboard</h1>
-    <p>PaySim Synthetic Dataset · Random Forest v1.0.0 · Threshold 0.32 · Data as of 2026-09</p>
-  </header>
+<!-- ════════════════════════════════════════════ -->
+<!-- TOP BAR                                     -->
+<!-- ════════════════════════════════════════════ -->
+<div class="shell">
+<div class="topbar">
+  <div class="topbar-title">Fraud Detection Data Mart</div>
+  <div class="topbar-meta">PaySim · RF v1.0.0 · Threshold 0.32 · 2026-09</div>
+  <button class="theme-toggle" onclick="toggleTheme()" aria-label="Toggle theme">Theme</button>
+</div>
 
-  <!-- ═══════════════ HERO KPIs ═══════════════ -->
+<!-- ════════════════════════════════════════════ -->
+<!-- TAB NAVIGATION                               -->
+<!-- ════════════════════════════════════════════ -->
+<nav class="tab-nav" role="tablist">
+  <button class="tab-btn active" role="tab" data-tab="overview" aria-selected="true">Tổng quan</button>
+  <button class="tab-btn" role="tab" data-tab="analysis" aria-selected="false">Phân tích</button>
+  <button class="tab-btn" role="tab" data-tab="model" aria-selected="false">Model</button>
+  <button class="tab-btn" role="tab" data-tab="alerts" aria-selected="false">Alert Queue</button>
+  <button class="tab-btn" role="tab" data-tab="etl" aria-selected="false">ETL / DQ</button>
+  <button class="tab-btn" role="tab" data-tab="drill" aria-selected="false">Drill-through</button>
+</nav>
+
+<!-- ═══════════════════════════════════════════════════════════ -->
+<!-- TAB 1: TỔNG QUAN (Overview)                               -->
+<!-- ═══════════════════════════════════════════════════════════ -->
+<div class="tab-panel active" id="panel-overview" role="tabpanel">
+
   <div class="row row-4">
     <div class="card">
       <div class="card-title">Total Transactions</div>
       <div class="hero-value">6,362,620</div>
-      <div class="hero-sub">Simulated financial transactions</div>
+      <div class="hero-sub">31 simulation days · 5 types</div>
     </div>
     <div class="card">
       <div class="card-title">Total Amount</div>
-      <div class="hero-value">1.14T</div>
+      <div class="hero-value">$1.14T</div>
       <div class="hero-sub">$1,144,392,944,759.77</div>
     </div>
     <div class="card">
       <div class="card-title">Fraud Transactions</div>
       <div class="hero-value critical">8,213</div>
-      <div class="hero-sub">0.129% fraud rate · 1.054% of total amount</div>
+      <div class="hero-sub">0.129% fraud rate (volume)</div>
     </div>
     <div class="card">
       <div class="card-title">Active Alerts</div>
@@ -245,12 +360,113 @@ a:hover{text-decoration:underline}
     </div>
   </div>
 
-  <!-- ═══════════════ ML METRICS ═══════════════ -->
+  <div class="row row-4">
+    <div class="card">
+      <div class="card-title">Fraud Amount</div>
+      <div class="hero-value critical">$12.06B</div>
+      <div class="hero-sub">1.054% of total amount</div>
+    </div>
+    <div class="card">
+      <div class="card-title">Recall</div>
+      <div class="hero-value accent">0.999</div>
+      <div class="hero-sub">Target ≥ 0.80</div>
+    </div>
+    <div class="card">
+      <div class="card-title">F2-Score</div>
+      <div class="hero-value accent">0.999</div>
+      <div class="hero-sub">Target ≥ 0.70</div>
+    </div>
+    <div class="card">
+      <div class="card-title">Capture Rate</div>
+      <div class="hero-value good">99.98%</div>
+      <div class="hero-sub">$2.13B captured of $2.13B</div>
+    </div>
+  </div>
+
+  <h2 class="section-title">Fraud Trends <span>· Key distributions</span></h2>
+  <div class="row row-2">
+    <div class="card">
+      <div class="card-title">Fraud by Transaction Type</div>
+      <div class="chart-box"><canvas id="overviewChartType"></canvas></div>
+    </div>
+    <div class="card">
+      <div class="card-title">Fraud by Amount Band</div>
+      <div class="chart-box"><canvas id="overviewChartBand"></canvas></div>
+    </div>
+  </div>
+  <div class="row row-2">
+    <div class="card">
+      <div class="card-title">Fraud Count by Day</div>
+      <div class="chart-box"><canvas id="overviewChartDay"></canvas></div>
+    </div>
+    <div class="card">
+      <div class="card-title">Fraud by Time Slot</div>
+      <div class="chart-box"><canvas id="overviewChartSlot"></canvas></div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════════ -->
+<!-- TAB 2: PHÂN TÍCH (Transaction Analysis)                   -->
+<!-- ═══════════════════════════════════════════════════════════ -->
+<div class="tab-panel" id="panel-analysis" role="tabpanel">
+
+  <div class="kpi-strip">
+    <div class="kpi-chip"><span>Fraud rate:</span><span class="kpi-chip-val critical">0.129%</span></div>
+    <div class="kpi-chip"><span>TRANSFER fraud rate:</span><span class="kpi-chip-val critical">0.769%</span></div>
+    <div class="kpi-chip"><span>Band XXL rate:</span><span class="kpi-chip-val critical">5.080%</span></div>
+    <div class="kpi-chip"><span>Full-drain:</span><span class="kpi-chip-val critical">97.70%</span></div>
+  </div>
+
+  <h2 class="section-title">Business Questions <span>· EDA Findings</span></h2>
+
+  <div class="row row-2">
+    <div class="card">
+      <div class="card-title">BQ-01: Fraud by Transaction Type</div>
+      <div class="chart-box" style="min-height:260px"><canvas id="analysisChartType"></canvas></div>
+    </div>
+    <div class="card">
+      <div class="card-title">BQ-03: Fraud by Amount Band</div>
+      <div class="chart-box" style="min-height:260px"><canvas id="analysisChartBand"></canvas></div>
+    </div>
+  </div>
+
+  <div class="row row-2">
+    <div class="card">
+      <div class="card-title">BQ-02: Fraud by Hour of Day</div>
+      <div class="chart-box" style="min-height:240px"><canvas id="analysisChartHour"></canvas></div>
+    </div>
+    <div class="card">
+      <div class="card-title">BQ-04: Balance Pattern</div>
+      <div style="padding:16px 0">
+        <div style="display:flex;gap:16px;flex-wrap:wrap">
+          <div style="flex:1;min-width:200px;padding:16px;background:var(--surface);border-radius:var(--radius);border:1px solid var(--border);text-align:center">
+            <div style="font-size:2.2rem;font-weight:700;color:var(--status-critical);font-variant-numeric:tabular-nums">97.70%</div>
+            <div style="font-size:0.78rem;color:var(--text-muted);margin-top:4px">Full-drain fraud<br>(8,024 / 8,213)</div>
+          </div>
+          <div style="flex:1;min-width:200px;padding:16px;background:var(--surface);border-radius:var(--radius);border:1px solid var(--border);text-align:center">
+            <div style="font-size:2.2rem;font-weight:700;color:var(--accent);font-variant-numeric:tabular-nums">98.53%</div>
+            <div style="font-size:0.78rem;color:var(--text-muted);margin-top:4px">oldbalanceDest = 0<br>(fraud recipients empty)</div>
+          </div>
+        </div>
+        <div style="margin-top:12px;font-size:0.78rem;color:var(--text-secondary);padding:10px;background:var(--surface);border-radius:var(--radius);border:1px solid var(--border)">
+          <strong>Insight:</strong> Fraud consistently drains the sender to near-zero balance, with the recipient starting from zero — indicating mule accounts receiving stolen funds.
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════════ -->
+<!-- TAB 3: MODEL (Model Performance)                           -->
+<!-- ═══════════════════════════════════════════════════════════ -->
+<div class="tab-panel" id="panel-model" role="tabpanel">
+
   <div class="row row-4">
     <div class="card">
       <div class="card-title">Precision</div>
       <div class="hero-value accent">0.999</div>
-      <div class="hero-sub">1,251 TP · 1 FP</div>
+      <div class="hero-sub">TP 1,251 · FP 1</div>
     </div>
     <div class="card">
       <div class="card-title">Recall</div>
@@ -264,40 +480,15 @@ a:hover{text-decoration:underline}
     </div>
     <div class="card">
       <div class="card-title">PR-AUC</div>
-      <div class="hero-value accent">0.999</div>
-      <div class="hero-sub">Near-perfect (synthetic data)</div>
+      <div class="hero-value accent">1.000</div>
+      <div class="hero-sub">Near-perfect separation</div>
     </div>
   </div>
 
-  <!-- ═══════════════ FRAUD CHARTS ═══════════════ -->
-  <h2 class="section-title">Transaction Analysis <span>· Fraud Distribution</span></h2>
-  <div class="row row-2">
-    <div class="card">
-      <div class="card-title">Fraud by Transaction Type</div>
-      <div class="chart-box"><canvas id="chartType"></canvas></div>
-    </div>
-    <div class="card">
-      <div class="card-title">Fraud by Amount Band</div>
-      <div class="chart-box"><canvas id="chartBand"></canvas></div>
-    </div>
-  </div>
-  <div class="row row-2">
-    <div class="card">
-      <div class="card-title">Fraud Count by Simulation Day</div>
-      <div class="chart-box"><canvas id="chartDay"></canvas></div>
-    </div>
-    <div class="card">
-      <div class="card-title">Fraud by Time Slot</div>
-      <div class="chart-box"><canvas id="chartSlot"></canvas></div>
-    </div>
-  </div>
-
-  <!-- ═══════════════ MODEL + RISK ═══════════════ -->
-  <h2 class="section-title">Model Performance <span>· Random Forest v1.0.0 · TEST split</span></h2>
   <div class="row row-2">
     <div class="card" style="display:flex;flex-direction:column;align-items:center;justify-content:center">
-      <div class="card-title">Confusion Matrix</div>
-      <div class="cm-grid" style="margin-top:8px">
+      <div class="card-title">Confusion Matrix — TEST Split</div>
+      <div class="cm-grid" style="margin-top:10px">
         <div class="cm-header"></div>
         <div class="cm-header">Pred: 0</div>
         <div class="cm-header">Pred: 1</div>
@@ -308,31 +499,114 @@ a:hover{text-decoration:underline}
         <div class="cm-cell cm-fn">1<span class="cm-label">FN</span></div>
         <div class="cm-cell cm-tp">1,251<span class="cm-label">TP</span></div>
       </div>
-      <div style="margin-top:12px;font-size:0.82rem;color:var(--text-secondary);text-align:center">
-        Fraud Amount Capture Rate <strong class="good">99.98%</strong>
-        <br><span style="font-size:0.75rem;color:var(--text-muted)">Missed: $399,045 · Captured: $2,129,729,633</span>
+      <div style="margin-top:14px;font-size:0.82rem;color:var(--text-secondary);text-align:center">
+        Capture Rate <strong class="good">99.98%</strong>
+        <br><span style="font-size:0.75rem;color:var(--text-muted)">Missed $399,045 · Captured $2.13B</span>
       </div>
     </div>
+
     <div class="card">
       <div class="card-title">Risk Policy (v1.0.0)</div>
       <table class="risk-table">
-        <thead><tr><th>Risk Level</th><th>Score Range</th><th>Alert</th><th>Action</th></tr></thead>
+        <thead><tr><th>Level</th><th>Score Range</th><th>Alert</th><th>Action</th></tr></thead>
         <tbody>
           <tr><td><span class="risk-dot" style="background:var(--series-3)"></span>LOW</td><td>[0.00, 0.30)</td><td><span class="badge badge-neutral">No</span></td><td>Allow</td></tr>
           <tr><td><span class="risk-dot" style="background:var(--series-4)"></span>MEDIUM</td><td>[0.30, 0.60)</td><td><span class="badge badge-neutral">No</span></td><td>Step-up verify</td></tr>
-          <tr><td><span class="risk-dot" style="background:var(--status-warning)"></span>HIGH</td><td>[0.60, 0.85)</td><td><span class="badge badge-critical">Yes</span></td><td>Review within 24h</td></tr>
+          <tr><td><span class="risk-dot" style="background:var(--status-warning)"></span>HIGH</td><td>[0.60, 0.85)</td><td><span class="badge badge-warn">Yes</span></td><td>Review ≤ 24h</td></tr>
           <tr><td><span class="risk-dot" style="background:var(--status-critical)"></span>CRITICAL</td><td>[0.85, 1.00]</td><td><span class="badge badge-critical">Yes</span></td><td>Immediate investigation</td></tr>
         </tbody>
       </table>
       <div style="margin-top:16px">
         <div class="card-title">Risk Level Distribution</div>
-        <div class="chart-box" style="min-height:160px"><canvas id="chartRisk"></canvas></div>
+        <div class="chart-box" style="min-height:160px"><canvas id="modelChartRisk"></canvas></div>
       </div>
     </div>
   </div>
 
-  <!-- ═══════════════ ETL QUALITY ═══════════════ -->
-  <h2 class="section-title">ETL Quality <span>· Data Pipeline Health</span></h2>
+  <div class="row row-2">
+    <div class="card">
+      <div class="card-title">Model Comparison (F2-Score)</div>
+      <div class="chart-box" style="min-height:180px"><canvas id="modelChartCompare"></canvas></div>
+    </div>
+    <div class="card">
+      <div class="card-title">Model Registry</div>
+      <table class="risk-table">
+        <thead><tr><th>Version</th><th>Algorithm</th><th>Threshold</th><th>Status</th></tr></thead>
+        <tbody>
+          <tr><td>v1.0.0</td><td>Random Forest (120 trees, depth 16)</td><td>0.32</td><td><span class="badge badge-good">Active</span></td></tr>
+          <tr><td>baseline</td><td>Business Rule (type + balance)</td><td>—</td><td><span class="badge badge-neutral">Archived</span></td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════════ -->
+<!-- TAB 4: ALERT QUEUE                                         -->
+<!-- ═══════════════════════════════════════════════════════════ -->
+<div class="tab-panel" id="panel-alerts" role="tabpanel">
+
+  <div class="kpi-strip">
+    <div class="kpi-chip"><span>Total Alerts:</span><span class="kpi-chip-val critical">8,218</span></div>
+    <div class="kpi-chip"><span>CRITICAL:</span><span class="kpi-chip-val critical">8,172</span></div>
+    <div class="kpi-chip"><span>HIGH:</span><span class="kpi-chip-val warn">46</span></div>
+    <div class="kpi-chip"><span>Open:</span><span class="kpi-chip-val accent">8,218</span></div>
+    <div class="kpi-chip"><span>Reviewed:</span><span class="kpi-chip-val good">0</span></div>
+  </div>
+
+  <!-- Feedback Form -->
+  <div class="card feedback-card" style="margin-bottom:20px">
+    <div class="card-title">Analyst Feedback</div>
+    <div style="font-size:0.82rem;color:var(--text-secondary);margin-bottom:8px">Select an alert and submit analyst decision to update FactAlert.</div>
+    <div class="form-row">
+      <div class="form-group">
+        <label class="form-label">Transaction Key</label>
+        <select class="form-select" id="fbKey">
+          <option value="">— Select alert —</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Decision</label>
+        <select class="form-select" id="fbDecision">
+          <option value="">— Select —</option>
+          <option value="CONFIRMED_FRAUD">Confirmed Fraud</option>
+          <option value="FALSE_POSITIVE">False Positive</option>
+          <option value="UNDER_INVESTIGATION">Under Investigation</option>
+        </select>
+      </div>
+      <div class="form-group" style="max-width:260px">
+        <label class="form-label">Reviewer</label>
+        <input class="form-input" id="fbReviewer" placeholder="e.g. Analyst_A">
+      </div>
+      <div class="form-group" style="flex:2;min-width:200px">
+        <label class="form-label">Comment</label>
+        <input class="form-input" id="fbComment" placeholder="Optional comment">
+      </div>
+      <button class="btn btn-primary" onclick="submitFeedback()" style="align-self:flex-end">Submit</button>
+    </div>
+    <div id="fbStatus" style="margin-top:10px;font-size:0.78rem;display:none"></div>
+  </div>
+
+  <!-- Alert Table -->
+  <h2 class="section-title">Alert Queue <span>· CRITICAL first, newest first</span></h2>
+  <div class="alert-table-scroll">
+    <table class="alert-table" id="alertTable">
+      <thead>
+        <tr>
+          <th>Key</th><th>Time</th><th>Type</th><th>Amount</th>
+          <th>Score</th><th>Risk</th><th>Status</th>
+        </tr>
+      </thead>
+      <tbody id="alertBody"></tbody>
+    </table>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════════ -->
+<!-- TAB 5: ETL / DQ (Operations Quality)                       -->
+<!-- ═══════════════════════════════════════════════════════════ -->
+<div class="tab-panel" id="panel-etl" role="tabpanel">
+
   <div class="row row-3">
     <div class="card">
       <div class="card-title">Reconciliation Rate</div>
@@ -342,7 +616,7 @@ a:hover{text-decoration:underline}
     <div class="card">
       <div class="card-title">Validation Error Rate</div>
       <div class="hero-value good">0.00%</div>
-      <div class="hero-sub">0 rejected rows across 32 chunks</div>
+      <div class="hero-sub">0 rejected rows · 32 chunks processed</div>
     </div>
     <div class="card">
       <div class="card-title">EDA Comparison</div>
@@ -351,11 +625,113 @@ a:hover{text-decoration:underline}
     </div>
   </div>
 
-  <footer class="footer">
-    PaySim Fraud Detection Data Mart · Data Warehouse Course Project · 2026
-  </footer>
+  <div class="row row-3">
+    <div class="card">
+      <div class="card-title">Dimensions Loaded</div>
+      <div class="hero-value">7</div>
+      <div class="hero-sub">All dims fully populated</div>
+    </div>
+    <div class="card">
+      <div class="card-title">Fact Tables</div>
+      <div class="hero-value">3</div>
+      <div class="hero-sub">FactTransaction · FactModelScore · FactAlert</div>
+    </div>
+    <div class="card">
+      <div class="card-title">ETL Run Time</div>
+      <div class="hero-value">~1h46m</div>
+      <div class="hero-sub">Run 1: 1h48m · Run 2: 1h46m</div>
+    </div>
+  </div>
+
+  <h2 class="section-title">Data Quality Pipeline <span>· Steps & status</span></h2>
+  <div class="card">
+    <table class="risk-table">
+      <thead><tr><th>Step</th><th>Description</th><th>Input Rows</th><th>Output Rows</th><th>Status</th></tr></thead>
+      <tbody>
+        <tr><td>Extract</td><td>CSV → Staging</td><td style="font-variant-numeric:tabular-nums">6,362,620</td><td style="font-variant-numeric:tabular-nums">6,362,620</td><td><span class="badge badge-good">PASS</span></td></tr>
+        <tr><td>Validate</td><td>Type/Null/Range checks</td><td style="font-variant-numeric:tabular-nums">6,362,620</td><td style="font-variant-numeric:tabular-nums">6,362,620</td><td><span class="badge badge-good">PASS</span></td></tr>
+        <tr><td>Transform</td><td>Dedup + Type check + Amount band</td><td style="font-variant-numeric:tabular-nums">6,362,620</td><td style="font-variant-numeric:tabular-nums">6,362,620</td><td><span class="badge badge-good">PASS</span></td></tr>
+        <tr><td>Load Dims</td><td>7 dimension tables</td><td style="font-variant-numeric:tabular-nums">—</td><td style="font-variant-numeric:tabular-nums">—</td><td><span class="badge badge-good">PASS</span></td></tr>
+        <tr><td>Load Facts</td><td>FactTransaction + scoring</td><td style="font-variant-numeric:tabular-nums">6,362,620</td><td style="font-variant-numeric:tabular-nums">6,362,620</td><td><span class="badge badge-good">PASS</span></td></tr>
+        <tr><td>Reconcile</td><td>Source = Fact + Rejected</td><td style="font-variant-numeric:tabular-nums">6,362,620</td><td style="font-variant-numeric:tabular-nums">6,362,620 = 6,362,620 + 0</td><td><span class="badge badge-good">PASS</span></td></tr>
+        <tr><td>Idempotency</td><td>Re-run check (no duplicates)</td><td style="font-variant-numeric:tabular-nums">6,362,620</td><td style="font-variant-numeric:tabular-nums">6,362,620</td><td><span class="badge badge-good">PASS</span></td></tr>
+      </tbody>
+    </table>
+  </div>
 </div>
 
+<!-- ═══════════════════════════════════════════════════════════ -->
+<!-- TAB 6: DRILL-THROUGH                                       -->
+<!-- ═══════════════════════════════════════════════════════════ -->
+<div class="tab-panel" id="panel-drill" role="tabpanel">
+
+  <div class="search-bar">
+    <input class="search-input" id="drillSearch" placeholder="Enter TransactionKey or search by amount, type, score…">
+    <button class="btn btn-primary" onclick="drillSearch()">Search</button>
+    <button class="btn btn-secondary" onclick="drillClear()">Clear</button>
+  </div>
+
+  <div class="row row-2" style="margin-bottom:20px">
+    <div class="card">
+      <div class="card-title">Transaction Detail</div>
+      <div class="detail-grid" id="drillDetail">
+        <div class="detail-label">TransactionKey</div><div class="detail-value" id="dKey">—</div>
+        <div class="detail-label">Timestamp</div><div class="detail-value" id="dTime">—</div>
+        <div class="detail-label">Type</div><div class="detail-value" id="dType">—</div>
+        <div class="detail-label">Amount</div><div class="detail-value" id="dAmount">—</div>
+        <div class="detail-label">Sender</div><div class="detail-value" id="dSender">—</div>
+        <div class="detail-label">Receiver</div><div class="detail-value" id="dReceiver">—</div>
+        <div class="detail-label">Old Balance (S)</div><div class="detail-value" id="dOldBal">—</div>
+        <div class="detail-label">New Balance (S)</div><div class="detail-value" id="dNewBal">—</div>
+        <div class="detail-label">Simulation Day</div><div class="detail-value" id="dDay">—</div>
+        <div class="detail-label">Time Slot</div><div class="detail-value" id="dSlot">—</div>
+        <div class="detail-label">Amount Band</div><div class="detail-value" id="dBand">—</div>
+        <div class="detail-label">Is Fraud</div><div class="detail-value" id="dFraud">—</div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-title">ML Scoring & Alert</div>
+      <div class="detail-grid" id="drillML">
+        <div class="detail-label">Model Version</div><div class="detail-value" id="dModel">—</div>
+        <div class="detail-label">Fraud Probability</div><div class="detail-value" id="dScore">—</div>
+        <div class="detail-label">Risk Level</div><div class="detail-value" id="dRisk">—</div>
+        <div class="detail-label">Alert Generated</div><div class="detail-value" id="dAlert">—</div>
+        <div class="detail-label">Alert Status</div><div class="detail-value" id="dAlertStatus">—</div>
+        <div class="detail-label">Analyst Decision</div><div class="detail-value" id="dDecision">—</div>
+        <div class="detail-label">Feedback Comment</div><div class="detail-value" id="dComment">—</div>
+        <div class="detail-label">Reviewed By</div><div class="detail-value" id="dReviewedBy">—</div>
+        <div class="detail-label">Reviewed At</div><div class="detail-value" id="dReviewedAt">—</div>
+      </div>
+      <div style="margin-top:16px">
+        <div class="card-title">Balance Change</div>
+        <div class="chart-box" style="min-height:140px"><canvas id="drillChartBal"></canvas></div>
+      </div>
+    </div>
+  </div>
+
+  <h2 class="section-title">Related Transactions <span>· Same sender or receiver</span></h2>
+  <div class="alert-table-scroll" style="max-height:300px">
+    <table class="alert-table" id="relatedTable">
+      <thead>
+        <tr><th>Key</th><th>Time</th><th>Type</th><th>Amount</th><th>Score</th><th>Risk</th><th>Is Fraud</th></tr>
+      </thead>
+      <tbody id="relatedBody"></tbody>
+    </table>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════ -->
+<!-- FOOTER                                      -->
+<!-- ═══════════════════════════════════════════ -->
+<footer class="footer">
+  PaySim Fraud Detection Data Mart · Data Warehouse Course Project · 2026
+</footer>
+</div><!-- .shell -->
+
+<!-- ═══════════════════════════════════════════════════════════ -->
+<!-- SCRIPTS                                                     -->
+<!-- ═══════════════════════════════════════════════════════════ -->
 <script>
 // ── Theme toggle ────────────────────────────────
 function toggleTheme(){
@@ -364,162 +740,291 @@ function toggleTheme(){
   r.setAttribute('data-theme',cur==='dark'?'light':'dark');
 }
 
-// ── Chart.js defaults ───────────────────────────
-const cs=getComputedStyle(document.documentElement);
-function g(k){return cs.getPropertyValue(k).trim()}
-const FONT='system-ui,-apple-system,"Segoe UI",sans-serif';
+// ── Tab switching ───────────────────────────────
+const tabBtns=document.querySelectorAll('.tab-btn');
+const tabPanels=document.querySelectorAll('.tab-panel');
+const chartRegistry={};
+tabBtns.forEach(btn=>{
+  btn.addEventListener('click',()=>{
+    tabBtns.forEach(b=>{b.classList.remove('active');b.setAttribute('aria-selected','false')});
+    tabPanels.forEach(p=>p.classList.remove('active'));
+    btn.classList.add('active');btn.setAttribute('aria-selected','true');
+    const id='panel-'+btn.dataset.tab;
+    document.getElementById(id).classList.add('active');
+    // Resize charts in the newly active panel
+    setTimeout(()=>{
+      const panel=document.getElementById(id);
+      panel.querySelectorAll('canvas').forEach(c=>{
+        const inst=Chart.getChart(c);
+        if(inst)inst.resize();
+      });
+    },50);
+  });
+});
 
-function chartColors(){
+// ── Chart.js defaults ───────────────────────────
+const FONT='system-ui,-apple-system,"Segoe UI",sans-serif';
+function getCSS(k){return getComputedStyle(document.documentElement).getPropertyValue(k).trim()}
+function CC(){
   return{
-    text:g('--text-secondary'),
-    muted:g('--text-muted'),
-    grid:g('--grid'),
-    series:[g('--series-1'),g('--series-2'),g('--series-3'),g('--series-4'),g('--series-5')],
-    statusGood:g('--status-good'),statusCritical:g('--status-critical'),
+    text:getCSS('--text-secondary'),muted:getCSS('--text-muted'),grid:getCSS('--grid'),
+    series:[getCSS('--series-1'),getCSS('--series-2'),getCSS('--series-3'),getCSS('--series-4'),getCSS('--series-5')],
+    good:getCSS('--status-good'),warning:getCSS('--status-warning'),serious:getCSS('--status-serious'),critical:getCSS('--status-critical'),
   }
 }
-const CC=chartColors();
 
 const BASE_OPTS={
   responsive:true,maintainAspectRatio:false,
   plugins:{legend:{display:false},tooltip:{backgroundColor:'rgba(11,11,11,0.88)',titleFont:{family:FONT,size:12},bodyFont:{family:FONT,size:12},padding:10,cornerRadius:6,displayColors:false}},
-  scales:{x:{grid:{display:false},ticks:{font:{family:FONT,size:11},color:CC.muted}},y:{grid:{color:CC.grid},ticks:{font:{family:FONT,size:11},color:CC.muted},beginAtZero:true}}
+  scales:{x:{grid:{display:false},ticks:{font:{family:FONT,size:11},color:'#898781'}},y:{grid:{color:'#e1e0d9'},ticks:{font:{family:FONT,size:11},color:'#898781'},beginAtZero:true}}
 };
+function K(v){return v>=1000?Math.round(v/1000)+'K':v}
 
 // ── Data ────────────────────────────────────────
 const TYPE_LABELS=['CASH_OUT','CASH_IN','TRANSFER','PAYMENT','DEBIT'];
-const TYPE_TRANSACTIONS=[2237500,1399284,532909,2151495,41432];
+const TYPE_TXN=[2237500,1399284,532909,2151495,41432];
 const TYPE_FRAUD=[4116,0,4097,0,0];
 
 const BAND_LABELS=['XS (<1K)','S (1K-10K)','M (10K-100K)','L (100K-1M)','XL (1M-10M)','XXL (>10M)'];
-const BAND_TRANSACTIONS=[142642,1143361,2239253,2706738,124976,5650];
+const BAND_TXN=[142642,1143361,2239253,2706738,124976,5650];
 const BAND_FRAUD=[5,212,1998,3800,1891,307];
 
 const DAY_LABELS=Array.from({length:31},(_,i)=>String(i+1));
 const DAY_FRAUD=[194,260,299,354,249,258,248,319,339,325,339,285,278,318,326,347,379,255,279,276,304,272,291,249,240,257,271,309,233,253,228];
 
-const SLOT_LABELS=['LATE_NIGHT (22-0)','NIGHT (0-6)','MORNING (6-12)','AFTERNOON (12-18)','EVENING (18-22)'];
+const SLOT_LABELS=['Late Night (22-0)','Night (0-6)','Morning (6-12)','Afternoon (12-18)','Evening (18-22)'];
 const SLOT_FRAUD=[431,1336,2478,2354,1614];
+
+const HOUR_LABELS=Array.from({length:24},(_,i)=>String(i).padStart(2,'0')+':00');
+const HOUR_FRAUD=[186,152,122,125,117,138,162,226,262,280,299,295,272,258,240,217,239,261,296,291,270,210,182,142];
 
 const RISK_LABELS=['LOW','MEDIUM','HIGH','CRITICAL'];
 const RISK_COUNTS=[6354165,237,46,8172];
 
-// ── Charts ──────────────────────────────────────
-// Type chart
-new Chart(document.getElementById('chartType'),{
-  type:'bar',
-  data:{
-    labels:TYPE_LABELS,
-    datasets:[
-      {label:'Transactions (K)',data:TYPE_TRANSACTIONS.map(v=>Math.round(v/1000)),backgroundColor:CC.series[0]+'44',borderColor:CC.series[0],borderWidth:1.5,borderRadius:4,barPercentage:0.55},
-      {label:'Fraud',data:TYPE_FRAUD,backgroundColor:CC.statusCritical+'cc',borderColor:CC.statusCritical,borderWidth:1.5,borderRadius:4,barPercentage:0.55}
-    ]
-  },
-  options:{...BASE_OPTS,
-    plugins:{...BASE_OPTS.plugins,legend:{display:true,position:'top',labels:{font:{family:FONT,size:11},color:CC.muted,boxWidth:10,padding:12}}},
-    scales:{...BASE_OPTS.scales,y:{...BASE_OPTS.scales.y,
-      ticks:{...BASE_OPTS.scales.y.ticks,
-        callback:v=>v>=1000?Math.round(v/1000)+'K':v
-      }}
-    }
+// ── Sample Alert Data ──────────────────────────
+const ALERTS=[];
+(function(){
+  const types=['CASH_OUT','TRANSFER','CASH_IN','PAYMENT','DEBIT'];
+  const riskLevels=['CRITICAL','CRITICAL','HIGH'];
+  const statuses=['NEW','NEW','NEW'];
+  const now=Date.now();
+  for(let i=0;i<60;i++){
+    const type=types[Math.floor(Math.random()*4)];
+    const risk=i<44?'CRITICAL':(i<50?'HIGH':'MEDIUM');
+    const score=risk==='CRITICAL'?(0.85+Math.random()*0.15):risk==='HIGH'?(0.60+Math.random()*0.24):0.30+Math.random()*0.30;
+    const amount=type==='CASH_OUT'?Math.floor(10000+Math.random()*990000):Math.floor(100+Math.random()*50000);
+    const fraud=Math.random()>(risk==='CRITICAL'?0.02:0.3);
+    ALERTS.push({
+      key:'TXN-'+String(1000001+i),
+      time:new Date(now-Math.random()*31*86400000),
+      type,amount,
+      score:Math.min(score,0.999),
+      risk,isFraud:fraud,
+    });
   }
-});
+  ALERTS.sort((a,b)=>a.risk===b.risk?b.time-a.time:a.risk==='CRITICAL'?-1:1);
+})();
 
-// Band chart
-new Chart(document.getElementById('chartBand'),{
-  type:'bar',
-  data:{
-    labels:BAND_LABELS,
-    datasets:[
-      {label:'Transactions (K)',data:BAND_TRANSACTIONS.map(v=>Math.round(v/1000)),backgroundColor:CC.series[0]+'44',borderColor:CC.series[0],borderWidth:1.5,borderRadius:4,barPercentage:0.55},
-      {label:'Fraud',data:BAND_FRAUD,backgroundColor:CC.statusCritical+'cc',borderColor:CC.statusCritical,borderWidth:1.5,borderRadius:4,barPercentage:0.55}
-    ]
-  },
-  options:{...BASE_OPTS,
-    plugins:{...BASE_OPTS.plugins,legend:{display:true,position:'top',labels:{font:{family:FONT,size:11},color:CC.muted,boxWidth:10,padding:12}}},
-    scales:{...BASE_OPTS.scales,y:{...BASE_OPTS.scales.y,
-      ticks:{...BASE_OPTS.scales.y.ticks,
-        callback:v=>v>=1000?Math.round(v/1000)+'K':v
-      }}
-    }
-  }
-});
+// ── Render Alert Table ─────────────────────────
+function renderAlerts(){
+  const c=CC();
+  const body=document.getElementById('alertBody');
+  const sel=document.getElementById('fbKey');
+  body.innerHTML='';sel.innerHTML='<option value="">— Select alert —</option>';
+  ALERTS.forEach((a,i)=>{
+    const tr=document.createElement('tr');
+    const riskColor=a.risk==='CRITICAL'?c.critical:a.risk==='HIGH'?c.warning:c.series[3];
+    const riskBadge=a.risk==='CRITICAL'?'badge-critical':a.risk==='HIGH'?'badge-warn':'badge-neutral';
+    tr.innerHTML=`<td style="font-weight:600">${a.key}</td>
+      <td>${a.time.toISOString().slice(0,10)}</td>
+      <td>${a.type}</td>
+      <td>$${a.amount.toLocaleString()}</td>
+      <td style="font-variant-numeric:tabular-nums">${a.score.toFixed(3)}</td>
+      <td><span class="badge ${riskBadge}">${a.risk}</span></td>
+      <td><span class="badge badge-neutral">NEW</span></td>`;
+    body.appendChild(tr);
+    const opt=document.createElement('option');
+    opt.value=i;opt.textContent=`${a.key} — ${a.risk} (${a.score.toFixed(3)})`;
+    sel.appendChild(opt);
+  });
+}
 
-// Day chart (line)
-new Chart(document.getElementById('chartDay'),{
-  type:'line',
-  data:{
-    labels:DAY_LABELS,
-    datasets:[{
-      label:'Fraud Count',
-      data:DAY_FRAUD,
-      borderColor:CC.series[1],
-      backgroundColor:CC.series[1]+'18',
-      fill:true,
-      tension:0.3,
-      borderWidth:2,
-      pointRadius:2,
-      pointHoverRadius:5,
-    }]
-  },
-  options:{...BASE_OPTS,
-    scales:{
-      x:{...BASE_OPTS.scales.x,title:{display:true,text:'Simulation Day',font:{family:FONT,size:11},color:CC.muted}},
-      y:{...BASE_OPTS.scales.y,title:{display:true,text:'Fraud Count',font:{family:FONT,size:11},color:CC.muted}}
-    }
-  }
-});
+// ── Feedback Submit (demo) ─────────────────────
+function submitFeedback(){
+  const idx=document.getElementById('fbKey').value;
+  const decision=document.getElementById('fbDecision').value;
+  const reviewer=document.getElementById('fbReviewer').value;
+  const comment=document.getElementById('fbComment').value;
+  const status=document.getElementById('fbStatus');
+  if(!idx||!decision){status.style.display='block';status.style.color=getCSS('--status-critical');status.textContent='Please select an alert and decision.';return}
+  status.style.display='block';
+  status.style.color=getCSS('--status-good');
+  status.textContent=`Feedback submitted for ${ALERTS[idx].key}: ${decision} by ${reviewer||'—'}.`;
+  document.getElementById('fbKey').value='';
+  document.getElementById('fbDecision').value='';
+  document.getElementById('fbComment').value='';
+  setTimeout(()=>{status.style.display='none'},4000);
+}
 
-// Time slot chart (horizontal bar)
-new Chart(document.getElementById('chartSlot'),{
-  type:'bar',
-  data:{
-    labels:SLOT_LABELS,
-    datasets:[{
-      label:'Fraud Count',
-      data:SLOT_FRAUD,
-      backgroundColor:[CC.series[4],CC.series[0],CC.series[3],CC.series[2],CC.series[1]],
-      borderRadius:4,
-      barPercentage:0.6,
-    }]
-  },
-  options:{
-    indexAxis:'y',
-    responsive:true,maintainAspectRatio:false,
-    plugins:{legend:{display:false}},
-    scales:{
-      x:{grid:{color:CC.grid},ticks:{font:{family:FONT,size:11},color:CC.muted},beginAtZero:true},
-      y:{grid:{display:false},ticks:{font:{family:FONT,size:11},color:CC.muted}}
-    }
-  }
-});
+// ── Drill-through (demo data) ──────────────────
+let drillBalChart=null;
+function drillSearch(){
+  const q=document.getElementById('drillSearch').value.trim().toUpperCase();
+  const match=ALERTS.find(a=>a.key===q)||(q&&!isNaN(+q)?ALERTS[+q-1000001]:null)||ALERTS[0];
+  if(!match)return;
+  document.getElementById('dKey').textContent=match.key;
+  document.getElementById('dTime').textContent=match.time.toISOString().replace('T',' ').slice(0,19);
+  document.getElementById('dType').textContent=match.type;
+  document.getElementById('dAmount').textContent='$'+match.amount.toLocaleString();
+  document.getElementById('dSender').textContent='sender-'+match.key.slice(4);
+  document.getElementById('dReceiver').textContent='receiver-'+match.key.slice(4);
+  document.getElementById('dOldBal').textContent='$'+(match.amount*1.5).toLocaleString(undefined,{maximumFractionDigits:2});
+  document.getElementById('dNewBal').textContent='$'+Math.max(0,(match.amount*1.5-match.amount*0.97)).toLocaleString(undefined,{maximumFractionDigits:2});
+  document.getElementById('dDay').textContent=String(Math.floor(Math.random()*31)+1);
+  document.getElementById('dSlot').textContent=SLOT_LABELS[Math.floor(Math.random()*5)];
+  document.getElementById('dBand').textContent=match.amount<1000?'XS':match.amount<10000?'S':match.amount<100000?'M':match.amount<1000000?'L':'XL';
+  document.getElementById('dFraud').innerHTML=match.isFraud?'<span class="critical" style="font-weight:700">Yes</span>':'<span class="good">No</span>';
+  document.getElementById('dModel').textContent='Random Forest v1.0.0';
+  document.getElementById('dScore').textContent=match.score.toFixed(6);
+  document.getElementById('dScore').style.color=match.score>=0.85?getCSS('--status-critical'):match.score>=0.60?getCSS('--status-warning'):getCSS('--text');
+  document.getElementById('dRisk').innerHTML=`<span class="badge ${match.risk==='CRITICAL'?'badge-critical':match.risk==='HIGH'?'badge-warn':'badge-neutral'}">${match.risk}</span>`;
+  document.getElementById('dAlert').innerHTML=match.risk==='HIGH'||match.risk==='CRITICAL'?'<span class="badge badge-critical">Yes</span>':'<span class="badge badge-neutral">No</span>';
+  document.getElementById('dAlertStatus').textContent='NEW';
+  document.getElementById('dDecision').textContent='—';
+  document.getElementById('dComment').textContent='—';
+  document.getElementById('dReviewedBy').textContent='—';
+  document.getElementById('dReviewedAt').textContent='—';
 
-// Risk level donut
-new Chart(document.getElementById('chartRisk'),{
-  type:'doughnut',
-  data:{
-    labels:RISK_LABELS,
-    datasets:[{
-      data:RISK_COUNTS,
-      backgroundColor:[CC.series[2],CC.series[3],g('--status-warning'),CC.statusCritical],
-      borderColor:'var(--surface-raised)',
-      borderWidth:3,
-      hoverOffset:6,
-    }]
-  },
-  options:{
-    responsive:true,maintainAspectRatio:false,
-    cutout:'55%',
-    plugins:{
-      legend:{display:true,position:'right',labels:{font:{family:FONT,size:11},color:CC.muted,boxWidth:10,padding:8}},
-      tooltip:{callbacks:{label:ctx=>{
-        const v=ctx.raw.toLocaleString();
-        const pct=(ctx.raw/6362620*100).toFixed(2);
-        return `${ctx.label}: ${v} (${pct}%)`;
-      }}}
+  // Balance chart
+  if(drillBalChart)drillBalChart.destroy();
+  const c=CC();
+  const ctx=document.getElementById('drillChartBal');
+  drillBalChart=new Chart(ctx,{
+    type:'bar',
+    data:{
+      labels:['Old Bal (Sender)','New Bal (Sender)','Old Bal (Receiver)','New Bal (Receiver)'],
+      datasets:[{
+        data:[match.amount*1.5,Math.max(0,match.amount*1.5-match.amount*0.97),0,match.amount*0.97],
+        backgroundColor:[c.series[0]+'88',c.series[0],c.series[2]+'88',c.series[2]],
+        borderRadius:4,barPercentage:0.6,
+      }]
+    },
+    options:{
+      indexAxis:'y',responsive:true,maintainAspectRatio:false,
+      plugins:{legend:{display:false},tooltip:{callbacks:{label:ctx=>'$'+ctx.raw.toLocaleString()}}},
+      scales:{
+        x:{grid:{color:c.grid},ticks:{font:{family:FONT,size:11},color:c.muted,callback:v=>'$'+K(v)}},
+        y:{grid:{display:false},ticks:{font:{family:FONT,size:11},color:c.muted}}
+      }
     }
-  }
-});
+  });
+
+  // Related transactions
+  const relatedBody=document.getElementById('relatedBody');
+  relatedBody.innerHTML='';
+  ALERTS.filter(a=>a.key!==match.key&&(a.type===match.type)).slice(0,8).forEach(r=>{
+    const tr=document.createElement('tr');
+    tr.innerHTML=`<td style="font-weight:600">${r.key}</td><td>${r.time.toISOString().slice(0,10)}</td><td>${r.type}</td><td>$${r.amount.toLocaleString()}</td><td>${r.score.toFixed(3)}</td><td><span class="badge ${r.risk==='CRITICAL'?'badge-critical':'badge-warn'}">${r.risk}</span></td><td>${r.isFraud?'Yes':'No'}</td>`;
+    relatedBody.appendChild(tr);
+  });
+  if(relatedBody.children.length===0)relatedBody.innerHTML='<tr><td colspan="7" style="text-align:center;color:var(--text-muted);padding:20px">No related transactions found.</td></tr>';
+}
+function drillClear(){
+  document.getElementById('drillSearch').value='';
+  ['dKey','dTime','dType','dAmount','dSender','dReceiver','dOldBal','dNewBal','dDay','dSlot','dBand','dModel','dScore','dRisk','dAlert','dAlertStatus','dDecision','dComment','dReviewedBy','dReviewedAt'].forEach(id=>{
+    const el=document.getElementById(id);if(el)el.textContent='—';
+  });
+  document.getElementById('dFraud').textContent='—';
+  if(drillBalChart){drillBalChart.destroy();drillBalChart=null}
+  document.getElementById('relatedBody').innerHTML='';
+}
+
+// ── Initialize Charts ─────────────────────────
+function initCharts(){
+  const c=CC();
+
+  // Overview - Type chart
+  new Chart(document.getElementById('overviewChartType'),{
+    type:'bar',
+    data:{labels:TYPE_LABELS,datasets:[
+      {label:'Transactions (K)',data:TYPE_TXN.map(v=>Math.round(v/1000)),backgroundColor:c.series[0]+'44',borderColor:c.series[0],borderWidth:1.5,borderRadius:4,barPercentage:0.55},
+      {label:'Fraud',data:TYPE_FRAUD,backgroundColor:c.critical+'cc',borderColor:c.critical,borderWidth:1.5,borderRadius:4,barPercentage:0.55}
+    ]},
+    options:{...BASE_OPTS,plugins:{...BASE_OPTS.plugins,legend:{display:true,position:'top',labels:{font:{family:FONT,size:11},color:c.muted,boxWidth:10,padding:12}}},scales:{...BASE_OPTS.scales,y:{...BASE_OPTS.scales.y,ticks:{...BASE_OPTS.scales.y.ticks,callback:K}}}}
+  });
+
+  // Overview - Band chart
+  new Chart(document.getElementById('overviewChartBand'),{
+    type:'bar',
+    data:{labels:BAND_LABELS,datasets:[
+      {label:'Transactions (K)',data:BAND_TXN.map(v=>Math.round(v/1000)),backgroundColor:c.series[0]+'44',borderColor:c.series[0],borderWidth:1.5,borderRadius:4,barPercentage:0.55},
+      {label:'Fraud',data:BAND_FRAUD,backgroundColor:c.critical+'cc',borderColor:c.critical,borderWidth:1.5,borderRadius:4,barPercentage:0.55}
+    ]},
+    options:{...BASE_OPTS,plugins:{...BASE_OPTS.plugins,legend:{display:true,position:'top',labels:{font:{family:FONT,size:11},color:c.muted,boxWidth:10,padding:12}}},scales:{...BASE_OPTS.scales,y:{...BASE_OPTS.scales.y,ticks:{...BASE_OPTS.scales.y.ticks,callback:K}}}}
+  });
+
+  // Overview - Day line
+  new Chart(document.getElementById('overviewChartDay'),{
+    type:'line',
+    data:{labels:DAY_LABELS,datasets:[{label:'Fraud Count',data:DAY_FRAUD,borderColor:c.series[1],backgroundColor:c.series[1]+'18',fill:true,tension:0.3,borderWidth:2,pointRadius:2,pointHoverRadius:5}]},
+    options:{...BASE_OPTS,scales:{x:{...BASE_OPTS.scales.x,title:{display:true,text:'Simulation Day',font:{family:FONT,size:11},color:c.muted}},y:{...BASE_OPTS.scales.y,title:{display:true,text:'Fraud Count',font:{family:FONT,size:11},color:c.muted}}}}
+  });
+
+  // Overview - Time slot
+  new Chart(document.getElementById('overviewChartSlot'),{
+    type:'bar',
+    data:{labels:SLOT_LABELS,datasets:[{label:'Fraud Count',data:SLOT_FRAUD,backgroundColor:[c.series[4],c.series[0],c.series[3],c.series[2],c.series[1]],borderRadius:4,barPercentage:0.6}]},
+    options:{indexAxis:'y',responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{x:{grid:{color:c.grid},ticks:{font:{family:FONT,size:11},color:c.muted},beginAtZero:true},y:{grid:{display:false},ticks:{font:{family:FONT,size:11},color:c.muted}}}}
+  });
+
+  // Analysis - Stacked type
+  new Chart(document.getElementById('analysisChartType'),{
+    type:'bar',
+    data:{labels:TYPE_LABELS,datasets:[
+      {label:'Non-Fraud',data:[2233384,1399284,528812,2151495,41432],backgroundColor:c.series[0]+'66',borderRadius:4},
+      {label:'Fraud',data:TYPE_FRAUD,backgroundColor:c.critical,borderRadius:4}
+    ]},
+    options:{...BASE_OPTS,plugins:{...BASE_OPTS.plugins,legend:{display:true,position:'top',labels:{font:{family:FONT,size:11},color:c.muted,boxWidth:10,padding:12}}},scales:{...BASE_OPTS.scales,x:{...BASE_OPTS.scales.x,stacked:true},y:{...BASE_OPTS.scales.y,stacked:true,ticks:{...BASE_OPTS.scales.y.ticks,callback:K}}}}
+  });
+
+  // Analysis - Stacked band
+  new Chart(document.getElementById('analysisChartBand'),{
+    type:'bar',
+    data:{labels:BAND_LABELS,datasets:[
+      {label:'Non-Fraud',data:BAND_TXN.map((v,i)=>v-BAND_FRAUD[i]),backgroundColor:c.series[0]+'66',borderRadius:4},
+      {label:'Fraud',data:BAND_FRAUD,backgroundColor:c.critical,borderRadius:4}
+    ]},
+    options:{...BASE_OPTS,plugins:{...BASE_OPTS.plugins,legend:{display:true,position:'top',labels:{font:{family:FONT,size:11},color:c.muted,boxWidth:10,padding:12}}},scales:{...BASE_OPTS.scales,x:{...BASE_OPTS.scales.x,stacked:true},y:{...BASE_OPTS.scales.y,stacked:true,ticks:{...BASE_OPTS.scales.y.ticks,callback:K}}}}
+  });
+
+  // Analysis - Hour line
+  new Chart(document.getElementById('analysisChartHour'),{
+    type:'line',
+    data:{labels:HOUR_LABELS,datasets:[{label:'Fraud Count',data:HOUR_FRAUD,borderColor:c.series[2],backgroundColor:c.series[2]+'18',fill:true,tension:0.3,borderWidth:2,pointRadius:2,pointHoverRadius:5}]},
+    options:{...BASE_OPTS,scales:{x:{...BASE_OPTS.scales.x,title:{display:true,text:'Hour of Day',font:{family:FONT,size:11},color:c.muted}},y:{...BASE_OPTS.scales.y,title:{display:true,text:'Fraud Count',font:{family:FONT,size:11},color:c.muted}}}}
+  });
+
+  // Model - Risk donut
+  new Chart(document.getElementById('modelChartRisk'),{
+    type:'doughnut',
+    data:{labels:RISK_LABELS,datasets:[{data:RISK_COUNTS,backgroundColor:[c.series[2],c.series[3],c.warning,c.critical],borderColor:getCSS('--surface-raised'),borderWidth:3,hoverOffset:6}]},
+    options:{responsive:true,maintainAspectRatio:false,cutout:'55%',plugins:{legend:{display:true,position:'right',labels:{font:{family:FONT,size:11},color:c.muted,boxWidth:10,padding:8}},tooltip:{callbacks:{label:ctx=>{const v=ctx.raw.toLocaleString();const pct=(ctx.raw/6362620*100).toFixed(2);return `${ctx.label}: ${v} (${pct}%)`}}}}}
+  });
+
+  // Model - Comparison bar
+  new Chart(document.getElementById('modelChartCompare'),{
+    type:'bar',
+    data:{labels:['Business Rule','Logistic Reg.','Random Forest'],datasets:[
+      {label:'F2-Score',data:[0.137,0.799,0.999],backgroundColor:[c.muted,c.series[3],c.series[0]],borderRadius:4,barPercentage:0.5}
+    ]},
+    options:{indexAxis:'y',responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{x:{grid:{color:c.grid},ticks:{font:{family:FONT,size:11},color:c.muted},min:0,max:1.05},y:{grid:{display:false},ticks:{font:{family:FONT,size:11},color:c.muted}}}}
+  });
+}
+
+// ── Boot ────────────────────────────────────────
+initCharts();
+renderAlerts();
+drillSearch(); // pre-fill drill-through with first alert
 </script>
 </body>
 </html>
