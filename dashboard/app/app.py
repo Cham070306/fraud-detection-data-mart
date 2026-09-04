@@ -1,17 +1,13 @@
 from __future__ import annotations
 
-from pathlib import Path
 import sys
-
-# Ensure the project root is importable
-_repo = Path(__file__).resolve().parents[2]
-if str(_repo) not in sys.path:
-    sys.path.insert(0, str(_repo))
+from pathlib import Path
 
 import streamlit as st
 
-from src.common.config import AppConfig
-from src.common.database import get_connection
+_repo = Path(__file__).resolve().parents[1]
+if str(_repo) not in sys.path:
+    sys.path.insert(0, str(_repo))
 
 st.set_page_config(
     page_title="Fraud Detection Dashboard",
@@ -20,16 +16,11 @@ st.set_page_config(
     initial_sidebar_state="expanded",
 )
 
-# Load risk policy for context
-_cfg = AppConfig.load()
-if "risk_policy" not in st.session_state:
-    st.session_state.risk_policy = _cfg.risk_policy
-
 st.sidebar.markdown("## :shield: Fraud Detection Dashboard")
 st.sidebar.caption("PaySim Fraud Detection Data Mart")
 
-# Quick health check
 try:
+    from src.common.database import get_connection
     conn = get_connection()
     conn.close()
     st.sidebar.success("DB Connected", icon=":white_check_mark:")
@@ -38,12 +29,9 @@ except Exception:
 
 st.sidebar.divider()
 st.sidebar.markdown(
-    "**Navigation**\n"
-    "Use the sidebar pages to explore:\n"
-    "1. Overview\n"
-    "2. Alert Queue\n"
-    "3. Model Performance\n"
-    "4. Operations"
+    "**Pages**\n"
+    "- **Alert Queue** — Review and act on fraud alerts\n"
+    "- Use the sidebar navigation to switch pages"
 )
 
 st.title("PaySim Fraud Detection Data Mart")
@@ -56,16 +44,13 @@ col1, col2 = st.columns(2)
 with col1:
     st.info(
         "**Quick Start**\n"
-        "- Navigate to **Overview** for high-level KPIs\n"
-        "- Use **Alert Queue** to review and act on fraud alerts\n"
-        "- Check **Model Performance** for ML metrics\n"
-        "- Monitor **Operations** for ETL pipeline health"
+        "- Navigate to **Alert Queue** to review and act on fraud alerts\n"
+        "- Use the sidebar to switch between pages"
     )
 with col2:
     st.info(
         "**Data Notes**\n"
         "- PaySim synthetic dataset (simulated transactions)\n"
         "- `step` is simulated time (not real calendar dates)\n"
-        "- Near-perfect ML metrics reflect synthetic data separability\n"
         "- Model: Random Forest v1.0.0, threshold 0.32"
     )
