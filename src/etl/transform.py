@@ -1,7 +1,7 @@
 from __future__ import annotations
 import pandas as pd
-from datetime import datetime, timedelta
 from src.common.config import AMOUNT_BANDS, HIGH_RISK_TYPES, DEFAULT_START_DATE
+from src.common.time_mapping import derive_simulation_time
 
 def amount_band_code(amount: float) -> str:
     for code, low, high in AMOUNT_BANDS:
@@ -14,14 +14,10 @@ def amount_band_code(amount: float) -> str:
 
 def transform_chunk(df: pd.DataFrame, start_date: str = DEFAULT_START_DATE) -> pd.DataFrame:
     out = pd.DataFrame(index=df.index)
-    out['StepRaw'] = df['step'].astype(int)
-    out['HourOfDay'] = (out['StepRaw'] - 1) % 24
-    out['StepDay'] = ((out['StepRaw'] - 1) // 24) + 1
-    base = datetime.strptime(start_date, '%Y-%m-%d')
-    out['DateKey'] = out['StepDay'].apply(
-        lambda d: int((base + timedelta(days=int(d) - 1)).strftime('%Y%m%d'))
-    )
-    out['TimeKey'] = out['HourOfDay']
+    time_keys = derive_simulation_time(df['step'], start_date)
+    out[['StepRaw', 'HourOfDay', 'StepDay', 'DateKey', 'TimeKey']] = time_keys[
+        ['StepRaw', 'HourOfDay', 'StepDay', 'DateKey', 'TimeKey']
+    ]
     out['TypeCode'] = df['type'].astype(str)
     out['IsHighRiskType'] = out['TypeCode'].isin(HIGH_RISK_TYPES).astype(int)
     out['Amount'] = df['amount'].astype(float).round(2)

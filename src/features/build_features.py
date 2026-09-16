@@ -38,8 +38,8 @@ def build_features(frame: pd.DataFrame) -> pd.DataFrame:
     x["Amount"] = amount
     x["LogAmount"] = np.log1p(amount)
     x["StepRaw"] = step
-    x["Hour"] = step.mod(24)
-    x["Day"] = step.floordiv(24) + 1
+    x["Hour"] = (step - 1).mod(24)
+    x["Day"] = (step - 1).floordiv(24) + 1
     x["OldBalanceOrig"] = old_orig
     x["NewBalanceOrig"] = new_orig
     x["BalanceChangeOrig"] = new_orig - old_orig

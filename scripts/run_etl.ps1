@@ -1,12 +1,9 @@
 ﻿# scripts/run_etl.ps1
 # Entry point chay ETL pipeline cho PaySim Fraud Detection Data Mart
 # Tac gia: Khai (TV2)
-# Cach chay: .\scripts\run_etl.ps1 [-ChunkSize 200000] [-SkipStaging]
+# Cach chay: .\scripts\run_etl.ps1 [-ChunkSize 200000]
 
-param(
-    [int]$ChunkSize = 200000,
-    [switch]$SkipStaging
-)
+param([int]$ChunkSize = 200000)
 
 $ErrorActionPreference = 'Stop'
 $root = Split-Path -Parent $PSScriptRoot
@@ -15,12 +12,8 @@ Set-Location $root
 Write-Host "=== PaySim Fraud Detection ETL ===" -ForegroundColor Cyan
 Write-Host "Root: $root"
 Write-Host "Chunk size: $ChunkSize"
-Write-Host "Skip staging: $SkipStaging"
 
-$env:FRAUD_ETL_CHUNK_SIZE = $ChunkSize
-
-$pythonArgs = @('-m','src.etl.run_etl')
-if ($SkipStaging) { $pythonArgs += '--skip-staging' }
+$pythonArgs = @('-m','src.etl.run_etl','--chunk-size', $ChunkSize)
 
 try {
     python @pythonArgs

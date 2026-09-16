@@ -1,11 +1,44 @@
 from __future__ import annotations
 
 from collections.abc import Iterable
+from datetime import datetime
 
 from src.common.logger import get_logger
 from src.common.database import query
 
 logger = get_logger("etl.load_dimensions")
+
+
+def ensure_dates(conn, transformed):
+    unique_dates = transformed[["DateKey", "StepDay"]].drop_duplicates()
+    if unique_dates.empty:
+        return
+    rows = []
+    for item in unique_dates.itertuples(index=False):
+        date_value = datetime.strptime(str(int(item.DateKey)), "%Y%m%d")
+        rows.append((
+            int(item.DateKey), int(item.StepDay), date_value.strftime("%A"),
+            date_value.weekday() + 1, ((int(item.StepDay) - 1) // 7) + 1,
+            int(date_value.weekday() >= 5),
+        ))
+    cur = conn.cursor()
+    try:
+        cur.executemany(
+            """
+            IF NOT EXISTS (SELECT 1 FROM dim.DimDate WHERE DateKey = ?)
+                INSERT INTO dim.DimDate (
+                    DateKey, StepDay, DayOfWeek, DayOfWeekNum,
+                    WeekOfSimulation, IsWeekend
+                ) VALUES (?, ?, ?, ?, ?, ?)
+            """,
+            [(row[0], *row) for row in rows],
+        )
+        conn.commit()
+    except Exception:
+        conn.rollback()
+        raise
+    finally:
+        cur.close()
 
 _CREATE_ACCOUNT_TEMP_SQL = (
     "DROP TABLE IF EXISTS #AccountInput; "
@@ -78,6 +111,8 @@ def ensure_accounts(conn, account_ids, batch_size=1000):
     cur = conn.cursor()
     try:
         cur.execute(_CREATE_ACCOUNT_TEMP_SQL)
+        if hasattr(cur, "fast_executemany"):
+            cur.fast_executemany = True
         for batch in chunked(values, batch_size):
             cur.executemany("INSERT INTO #AccountInput (AccountID) VALUES (?)",
                             [(account_id,) for account_id in batch])
@@ -114,6 +149,7 @@ def get_lookup_keys(conn):
 
 
 def load_dimensions_for_chunk(conn, df_transformed):
+    ensure_dates(conn, df_transformed)
     account_ids = df_transformed["NameOrig"].tolist() + df_transformed["NameDest"].tolist()
     account_map = ensure_accounts(conn, account_ids)
     lookups = get_lookup_keys(conn)

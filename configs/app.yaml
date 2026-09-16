@@ -1,0 +1,11 @@
+paysim_file: "data/raw/PS_20174392719_1491204439457_log.csv"
+chunk_size: 200000
+start_date: "2023-01-01"
+max_step: 744
+max_validation_error_rate: 0.001
+
+database:
+  server: "localhost\\SQLEXPRESS"
+  name: "FraudDW"
+  driver: "ODBC Driver 17 for SQL Server"
+  trusted_connection: true

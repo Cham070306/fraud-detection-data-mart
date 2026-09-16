@@ -5,10 +5,14 @@ import joblib
 import pandas as pd
 
 from src.features.build_features import build_features
+from src.common.config import DEFAULT_START_DATE
+from src.common.time_mapping import derive_simulation_time
 from .alert_engine import classify_risk, load_policy
 
 
-def score_transactions(frame, model_path, metadata, policy_path):
+def score_transactions(
+    frame, model_path, metadata, policy_path, start_date: str = DEFAULT_START_DATE
+):
     model = joblib.load(model_path)
     x = build_features(frame)
     expected = list(metadata["feature_list"])
@@ -19,10 +23,19 @@ def score_transactions(frame, model_path, metadata, policy_path):
     policy = load_policy(policy_path)
     rows = [classify_risk(float(s), policy) for s in scores]
     out = pd.DataFrame(index=frame.index)
-    out["TransactionKey"] = frame["TransactionKey"] if "TransactionKey" in frame else frame.index.astype(str)
-    step = pd.to_numeric(frame["step"], errors="coerce").fillna(0).astype(int)
-    out["DateKey"] = step.floordiv(24) + 1
-    out["TimeKey"] = step.mod(24)
+    if "TransactionKey" not in frame:
+        raise ValueError(
+            "TransactionKey is required for production scoring. "
+            "Use --from-sql or provide an input that was exported from FactTransaction."
+        )
+    out["TransactionKey"] = pd.to_numeric(frame["TransactionKey"], errors="raise").astype("int64")
+    if "DateKey" in frame and "TimeKey" in frame:
+        out["DateKey"] = pd.to_numeric(frame["DateKey"], errors="raise").astype(int)
+        out["TimeKey"] = pd.to_numeric(frame["TimeKey"], errors="raise").astype(int)
+    else:
+        time_keys = derive_simulation_time(frame["step"], start_date)
+        out["DateKey"] = time_keys["DateKey"]
+        out["TimeKey"] = time_keys["TimeKey"]
     out["TransactionType"] = frame["type"].astype(object).fillna("UNKNOWN").astype(str)
     out["Amount"] = pd.to_numeric(frame["amount"], errors="coerce").fillna(0.0)
     out["FraudScore"] = scores

@@ -1,53 +1,108 @@
 #!/usr/bin/env python
-"""Run validation queries against FraudDW (equivalent of sql/08_validation_queries.sql)."""
-import io
-import os
+"""Validate the operational FraudDW and return a non-zero code on failure."""
+from __future__ import annotations
+
+import argparse
+import json
 import sys
+from pathlib import Path
 
-import pyodbc
-sys.stdout = io.TextIOWrapper(sys.stdout.buffer, encoding='utf-8')
+PROJECT_ROOT = Path(__file__).resolve().parents[1]
+if str(PROJECT_ROOT) not in sys.path:
+    sys.path.insert(0, str(PROJECT_ROOT))
 
-server = os.getenv("FRAUD_DB_SERVER", r"localhost\SQLEXPRESS")
-database = os.getenv("FRAUD_DB_NAME", "FraudDW")
-conn = pyodbc.connect(
-    f"DRIVER={{ODBC Driver 17 for SQL Server}};SERVER={server};DATABASE={database};"
-    "Trusted_Connection=yes;TrustServerCertificate=yes"
-)
-cur = conn.cursor()
+from src.common.database import get_connection, query
 
-print('=== VALIDATION QUERIES (FraudDW) ===')
-print()
 
-cur.execute('SELECT COUNT_BIG(*) FROM stg.TransactionRaw')
-print(f'stg.TransactionRaw: {cur.fetchone()[0]:,}')
-cur.execute('SELECT COUNT_BIG(*) FROM fact.FactTransaction')
-print(f'fact.FactTransaction: {cur.fetchone()[0]:,}')
-cur.execute('SELECT COUNT_BIG(*) FROM fact.FactModelScore')
-print(f'fact.FactModelScore: {cur.fetchone()[0]:,}')
-cur.execute('SELECT COUNT_BIG(*) FROM fact.FactAlert')
-print(f'fact.FactAlert: {cur.fetchone()[0]:,}')
-print()
+def scalar(conn, sql: str) -> int:
+    return int(query(conn, sql)[0][0])
 
-cur.execute('SELECT IsFraud, COUNT_BIG(*) FROM fact.FactTransaction GROUP BY IsFraud')
-print('Fraud breakdown:')
-for r in cur.fetchall():
-    print(f'  IsFraud={r[0]}: {r[1]:,}')
-print()
 
-cur.execute('SELECT COUNT_BIG(*), SUM(CASE WHEN IsFraud=1 THEN 1 ELSE 0 END), SUM(CASE WHEN IsFlaggedFraud=1 THEN 1 ELSE 0 END) FROM fact.FactTransaction')
-r = cur.fetchone()
-print(f'EDA-01 reconciliation: Total={r[0]:,}, Fraud={r[1]:,}, Flagged={r[2]:,}')
-print()
+def main():
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--expected-transactions", type=int, default=6_362_620)
+    parser.add_argument("--expected-fraud", type=int, default=8_213)
+    parser.add_argument("--expected-alerts", type=int, default=8_218)
+    parser.add_argument("--require-ml", action="store_true")
+    args = parser.parse_args()
 
-cur.execute('SELECT SUM(Amount), SUM(CASE WHEN IsFraud=1 THEN Amount ELSE 0 END) FROM fact.FactTransaction')
-r = cur.fetchone()
-print(f'Amount: Total={r[0]:,.2f}, Fraud={r[1]:,.2f}')
-print()
+    conn = get_connection()
+    try:
+        result = {
+            "staging_rows": scalar(conn, """
+                SELECT COUNT_BIG(*) FROM stg.TransactionRaw
+                WHERE BatchID = (SELECT MAX(BatchID) FROM audit.ETLBatchLog)
+            """),
+            "fact_rows": scalar(conn, "SELECT COUNT_BIG(*) FROM fact.FactTransaction"),
+            "fraud_rows": scalar(conn, "SELECT COUNT_BIG(*) FROM fact.FactTransaction WHERE IsFraud=1"),
+            "score_rows": scalar(conn, """
+                SELECT COUNT_BIG(*) FROM fact.FactModelScore s
+                JOIN dim.DimModelVersion m ON m.ModelVersionKey=s.ModelVersionKey
+                WHERE m.IsProduction=1
+            """),
+            "alert_rows": scalar(conn, """
+                SELECT COUNT_BIG(*) FROM fact.FactAlert a
+                JOIN fact.FactModelScore s ON s.ScoreKey=a.ScoreKey
+                JOIN dim.DimModelVersion m ON m.ModelVersionKey=s.ModelVersionKey
+                WHERE m.IsProduction=1
+            """),
+            "duplicate_groups": scalar(conn, """
+                SELECT COUNT_BIG(*) FROM (
+                    SELECT DateKey, TimeKey, TransactionTypeKey, OrigAccountKey,
+                           DestAccountKey, AmountBandKey, StepRaw, Amount,
+                           OldBalanceOrig, NewBalanceOrig, OldBalanceDest,
+                           NewBalanceDest, IsFraud, IsFlaggedFraud
+                    FROM fact.FactTransaction
+                    GROUP BY DateKey, TimeKey, TransactionTypeKey, OrigAccountKey,
+                             DestAccountKey, AmountBandKey, StepRaw, Amount,
+                             OldBalanceOrig, NewBalanceOrig, OldBalanceDest,
+                             NewBalanceDest, IsFraud, IsFlaggedFraud
+                    HAVING COUNT_BIG(*) > 1
+                ) d
+            """),
+            "orphan_rows": scalar(conn, """
+                SELECT COUNT_BIG(*) FROM fact.FactTransaction f
+                LEFT JOIN dim.DimDate d ON d.DateKey=f.DateKey
+                LEFT JOIN dim.DimTime t ON t.TimeKey=f.TimeKey
+                LEFT JOIN dim.DimTransactionType tt ON tt.TransactionTypeKey=f.TransactionTypeKey
+                LEFT JOIN dim.DimAccount oa ON oa.AccountKey=f.OrigAccountKey
+                LEFT JOIN dim.DimAccount da ON da.AccountKey=f.DestAccountKey
+                LEFT JOIN dim.DimAmountBand ab ON ab.AmountBandKey=f.AmountBandKey
+                WHERE d.DateKey IS NULL OR t.TimeKey IS NULL OR tt.TransactionTypeKey IS NULL
+                   OR oa.AccountKey IS NULL OR da.AccountKey IS NULL OR ab.AmountBandKey IS NULL
+            """),
+            "time_mapping_errors": scalar(conn, """
+                SELECT COUNT_BIG(*) FROM fact.FactTransaction
+                WHERE TimeKey <> (StepRaw - 1) % 24
+                   OR DateKey <> CONVERT(INT, CONVERT(CHAR(8),
+                       DATEADD(DAY, (StepRaw - 1) / 24, '2023-01-01'), 112))
+            """),
+        }
+        failures = []
+        for field in ("staging_rows", "fact_rows"):
+            if result[field] != args.expected_transactions:
+                failures.append(f"{field} expected {args.expected_transactions}, got {result[field]}")
+        if result["fraud_rows"] != args.expected_fraud:
+            failures.append(f"fraud_rows expected {args.expected_fraud}, got {result['fraud_rows']}")
+        for field in ("duplicate_groups", "orphan_rows", "time_mapping_errors"):
+            if result[field] != 0:
+                failures.append(f"{field} expected 0, got {result[field]}")
+        if args.require_ml:
+            if result["score_rows"] != args.expected_transactions:
+                failures.append(
+                    f"score_rows expected {args.expected_transactions}, got {result['score_rows']}"
+                )
+            if result["alert_rows"] != args.expected_alerts:
+                failures.append(
+                    f"alert_rows expected {args.expected_alerts}, got {result['alert_rows']}"
+                )
+        result["status"] = "PASS" if not failures else "FAIL"
+        result["failures"] = failures
+        print(json.dumps(result, indent=2, ensure_ascii=False))
+        return 0 if not failures else 1
+    finally:
+        conn.close()
 
-cur.execute('SELECT COUNT_BIG(*) FROM fact.FactTransaction f LEFT JOIN dim.DimDate d ON f.DateKey=d.DateKey WHERE d.DateKey IS NULL')
-print(f'Orphan FK (DateKey): {cur.fetchone()[0]}')
-print()
 
-cur.close()
-conn.close()
-print('VALIDATION DONE')
+if __name__ == "__main__":
+    sys.exit(main())

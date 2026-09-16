@@ -6,6 +6,7 @@ from pathlib import Path
 import pandas as pd
 
 from src.training.train import save_model, train_models
+from src.training.model_registry import register_model
 
 
 def main():
@@ -25,6 +26,10 @@ def main():
     frame = pd.read_csv(args.input, usecols=list(dtypes), dtype=dtypes, nrows=args.rows)
     selected_name, results = train_models(frame)
     artifact, metadata = save_model(selected_name, results[selected_name], args.output_dir, args.version, training_data_source=str(Path(args.input).resolve()))
+    metadata_path = artifact.with_name(f"fraud_model_v{args.version}_metadata.json")
+    registry_entry = register_model(
+        artifact, metadata_path, Path(args.output_dir) / "registry.json"
+    )
     evaluation_dir = Path(args.evaluation_dir)
     evaluation_dir.mkdir(parents=True, exist_ok=True)
     comparison = pd.DataFrame([
@@ -33,7 +38,13 @@ def main():
     ])
     comparison.to_csv(evaluation_dir / "model_comparison.csv", index=False)
     summary = {name: {"training_rows": value["training_rows"], **value["validation"]} for name, value in results.items()}
-    print(json.dumps({"selected": selected_name, "artifact": str(artifact), "validation": summary, "test": metadata["test_metrics"]}, indent=2))
+    print(json.dumps({
+        "selected": selected_name,
+        "artifact": str(artifact),
+        "registry": registry_entry,
+        "validation": summary,
+        "test": metadata["test_metrics"],
+    }, indent=2))
 
 
 if __name__ == "__main__":

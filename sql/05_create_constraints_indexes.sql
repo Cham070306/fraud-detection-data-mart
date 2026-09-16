@@ -39,6 +39,7 @@ CREATE UNIQUE INDEX UX_FactTransaction_BusinessGrain ON fact.FactTransaction(
     AmountBandKey, StepRaw, Amount, OldBalanceOrig, NewBalanceOrig,
     OldBalanceDest, NewBalanceDest, IsFraud, IsFlaggedFraud
 );
-CREATE INDEX IX_FactModelScore_Transaction ON fact.FactModelScore(TransactionKey, ModelVersionKey);
+CREATE UNIQUE INDEX UX_FactModelScore_TransactionModel ON fact.FactModelScore(TransactionKey, ModelVersionKey);
 CREATE INDEX IX_FactAlert_LevelStatus ON fact.FactAlert(AlertLevel, AlertStatus, DateKey);
+CREATE UNIQUE INDEX UX_FactAlert_Score ON fact.FactAlert(ScoreKey);
 GO

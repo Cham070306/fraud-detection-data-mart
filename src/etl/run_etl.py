@@ -1,4 +1,6 @@
 ﻿from __future__ import annotations
+import argparse
+from pathlib import Path
 from src.common.config import AppConfig
 from src.common.logger import get_logger
 from src.common.database import get_connection, execute
@@ -47,6 +49,8 @@ def finalize_batch(conn, batch_id, status, message=""):
 
 
 def _load_staging(conn, chunk, batch_id, source_name, chunk_idx, chunk_size):
+    if chunk.empty:
+        return
     rows = []
     base = chunk_idx * chunk_size
     for i, r in enumerate(chunk.itertuples(index=False)):
@@ -59,6 +63,8 @@ def _load_staging(conn, chunk, batch_id, source_name, chunk_idx, chunk_size):
         ))
     cur = conn.cursor()
     try:
+        if hasattr(cur, "fast_executemany"):
+            cur.fast_executemany = True
         cur.executemany(_INSERT_STAGING_SQL, rows)
         conn.commit()
     except Exception:
@@ -73,6 +79,8 @@ def _log_rejects(conn, reject_rows_all):
         return
     cur = conn.cursor()
     try:
+        if hasattr(cur, "fast_executemany"):
+            cur.fast_executemany = True
         cur.executemany(
             "INSERT INTO audit.RejectLog (BatchID, SourceFileName, ChunkIndex, StepRaw, Reason) "
             "VALUES (?, ?, ?, ?, ?)",
@@ -93,7 +101,7 @@ def _safe_step(value):
         return None
 
 
-def run_pipeline(cfg=None, load_staging=True):
+def run_pipeline(cfg=None):
     cfg = cfg or AppConfig.load()
     logger.info("Bat dau pipeline ETL")
     conn = get_connection(cfg)
@@ -113,14 +121,13 @@ def run_pipeline(cfg=None, load_staging=True):
 
         for chunk_idx, chunk in enumerate(extract_chunks(cfg)):
             total_source += len(chunk)
-            valid, reject = validate_chunk(chunk)
+            valid, reject = validate_chunk(chunk, max_step=cfg.max_step)
             total_valid += len(valid)
             total_reject += len(reject)
             # The staging schema is typed and NOT NULL, so rejected raw values
             # belong in RejectLog; loading them first would fail before DQ can
             # record the real rejection reason.
-            if load_staging:
-                _load_staging(conn, valid, batch_id, source_name, chunk_idx, cfg.chunk_size)
+            _load_staging(conn, valid, batch_id, source_name, chunk_idx, cfg.chunk_size)
             for _, r in reject.iterrows():
                 reject_rows_all.append((
                     batch_id, source_name, chunk_idx,
@@ -146,11 +153,17 @@ def run_pipeline(cfg=None, load_staging=True):
             inserted_rows=total_inserted,
         )
         log_reconciliation(conn, result)
-        validation_pass = total_reject == 0 and total_source == total_valid
-        status = "SUCCESS" if result["status"] == "PASS" and validation_pass else "FAIL"
+        accounting_pass = total_source == total_valid + total_reject
+        error_rate = total_reject / total_source if total_source else 0.0
+        within_tolerance = error_rate <= cfg.max_validation_error_rate
+        if result["status"] == "PASS" and accounting_pass and within_tolerance:
+            status = "SUCCESS" if total_reject == 0 else "SUCCESS_WARN"
+        else:
+            status = "FAIL"
         finalize_batch(
             conn, batch_id, status,
             (f"source={total_source}, valid={total_valid}, reject={total_reject}, "
+             f"error_rate={error_rate:.6f}, "
              f"inserted={total_inserted}, existing={result['existing_rows']}, "
              f"matched_fact={result['final_fact_rows']}")
         )
@@ -163,6 +176,7 @@ def run_pipeline(cfg=None, load_staging=True):
             "valid_rows": total_valid,
             "rejected_rows": total_reject,
             "reject_rows": total_reject,
+            "validation_error_rate": error_rate,
             "inserted_rows": total_inserted,
             "existing_rows": result["existing_rows"],
             "final_fact_rows": result["final_fact_rows"],
@@ -182,6 +196,22 @@ def run_pipeline(cfg=None, load_staging=True):
         conn.close()
 
 
-if __name__ == "__main__":
-    summary = run_pipeline()
+def main():
+    parser = argparse.ArgumentParser(description="Run the PaySim ETL pipeline")
+    parser.add_argument("--config", type=Path)
+    parser.add_argument("--input", type=Path)
+    parser.add_argument("--chunk-size", type=int)
+    args = parser.parse_args()
+    cfg = AppConfig.load(args.config)
+    if args.input:
+        cfg.paysim_file = args.input
+    if args.chunk_size:
+        if args.chunk_size < 1:
+            parser.error("--chunk-size must be positive")
+        cfg.chunk_size = args.chunk_size
+    summary = run_pipeline(cfg)
     print(summary)
+
+
+if __name__ == "__main__":
+    main()

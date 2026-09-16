@@ -33,3 +33,20 @@ TV4 owns the feature list, model/threshold metadata, scoring fields, policy
 mapping and ML reconciliation totals. TV2 owns the physical SQL load, keys,
 constraints, batch transaction and database reconciliation. TV5 consumes only
 the agreed BI views after TV2 and TV4 sign off the row counts and versions.
+
+## Implemented load path
+
+Production scoring now reads `TransactionKey`, `DateKey` and `TimeKey` directly
+from SQL Server, avoiding row-number joins with the raw CSV:
+
+```powershell
+.\scripts\score_transactions.ps1 -FromSql
+.\scripts\load_ml_results.ps1
+python scripts/run_validation.py --require-ml
+```
+
+The loader upserts model metadata and risk policy, merges scores on
+`(TransactionKey, ModelVersionKey)`, creates alerts from HIGH/CRITICAL rows and
+preserves existing analyst feedback. SQL migration 11 adds the unique indexes
+required for safe re-runs. Runtime sign-off still requires executing the commands
+against the target SQL Server and reconciling 6.362.620 scores and 8.218 alerts.

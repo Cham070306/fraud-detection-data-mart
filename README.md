@@ -318,27 +318,18 @@ notepad .env
 Nội dung `.env` (điền giá trị thực của bạn vào các dòng có `#` hướng dẫn):
 ```env
 # --- SQL Server Connection ---
-DB_SERVER=localhost                    # Tên server hoặc IP (ví dụ: localhost\SQLEXPRESS)
-DB_PORT=1433                           # Cổng SQL Server mặc định
-DB_NAME=FraudDW                        # Tên database (tạo tự động bởi 00_create_database.sql)
-DB_USER=sa                             # Username SQL Server
-DB_PASSWORD=YourPassword123!           # Mật khẩu SQL Server — THAY BẰNG GIÁ TRỊ THỰC
-DB_DRIVER=ODBC Driver 18 for SQL Server
-
-# --- Paths ---
-DATA_RAW_PATH=data/raw/PaySim.csv
-DATA_PROCESSED_PATH=data/processed/
-MODEL_OUTPUT_PATH=models/
-LOG_PATH=logs/
-
-# --- ETL Config ---
-ETL_CHUNK_SIZE=50000                   # Số dòng đọc mỗi chunk (tránh tràn RAM)
-ETL_LOG_LEVEL=INFO                     # Mức log: DEBUG | INFO | WARNING | ERROR
-
-# --- ML Config ---
-RANDOM_STATE=42                        # Seed cho tính tái tạo kết quả
-TEST_SIZE=0.2                          # Tỷ lệ tập test (20%)
+FRAUD_DB_SERVER=localhost\SQLEXPRESS
+FRAUD_DB_NAME=FraudDW
+FRAUD_DB_USER=
+FRAUD_DB_PASSWORD=
+FRAUD_DB_DRIVER=ODBC Driver 17 for SQL Server
+FRAUD_DB_TRUSTED_CONNECTION=true
 ```
+
+Chỉnh `configs/app.yaml` để cấu hình đường dẫn PaySim, `chunk_size`,
+ngày mô phỏng bắt đầu, `max_step` và ngưỡng reject cho phép. Đặt
+`max_step: null` khi nạp nguồn mới có thời gian dài hơn 744 giờ; ETL sẽ bổ sung
+các dòng `DimDate` còn thiếu.
 
 ### Bước 2: Tải dataset PaySim
 
@@ -348,7 +339,7 @@ pip install kaggle
 kaggle datasets download -d ealaxi/paysim1 -p data\raw --unzip
 
 # Hoặc copy thủ công file CSV vào:
-# data\raw\PaySim.csv (hoặc PS_20174392719_1491208443941_log.csv)
+# data\raw\PS_20174392719_1491204439457_log.csv
 ```
 
 ### Bước 3: Khởi tạo Database SQL Server
@@ -357,7 +348,9 @@ kaggle datasets download -d ealaxi/paysim1 -p data\raw --unzip
 .\scripts\setup_database.ps1
 ```
 
-Script này chạy tuần tự các file SQL từ `00_create_database.sql` đến `07_seed_dimensions.sql`.
+Script tự phát hiện database mới hay database đã có dữ liệu. Database mới
+được tạo đầy đủ; database hiện hữu chỉ chạy migration không phá hủy. Chỉ
+dùng `-Rebuild` khi chấp nhận xóa và nạp lại dữ liệu.
 
 ### Bước 4: Chạy ETL Pipeline
 
@@ -378,7 +371,9 @@ python -m src.etl.run_etl
 ### Bước 5: Train mô hình ML
 
 ```powershell
-.\scripts\train_model.ps1
+.\scripts\train_model.ps1 `
+  -InputCsv "data\raw\PS_20174392719_1491204439457_log.csv" `
+  -Version "1.0.0"
 ```
 
 **Kết quả kỳ vọng:**
@@ -388,12 +383,19 @@ python -m src.etl.run_etl
 ### Bước 6: Chấm điểm giao dịch
 
 ```powershell
-.\scripts\score_transactions.ps1
+.\scripts\score_transactions.ps1 -FromSql
+.\scripts\load_ml_results.ps1
 ```
 
 **Kết quả kỳ vọng:**
 - `FactModelScore`: 6.362.620 records
 - `FactAlert`: ~vài nghìn records (HIGH + CRITICAL)
+
+Chạy validation cuối cùng:
+
+```powershell
+python scripts/run_validation.py --require-ml
+```
 
 ### Bước 7: Khởi động Dashboard
 
@@ -425,13 +427,15 @@ Truy cập: `http://localhost:8501`
 
 > [!CAUTION]
 > **KHÔNG commit các file sau lên Git:**
-> - `data/raw/PaySim.csv` (~493 MB)
+> - `data/raw/PS_20174392719_1491204439457_log.csv` (~493 MB)
 > - `.env` (chứa credentials SQL Server)
 > - `configs/database.yaml` (chứa thông tin kết nối)
 > - `models/*.pkl` nếu kích thước lớn
 
 > [!NOTE]
-> **Thay đổi ngưỡng Risk Policy:** Chỉ cần sửa `configs/risk_policy.yaml` và chạy lại `score_transactions.ps1` — không cần train lại mô hình.
+> **Thay đổi ngưỡng Risk Policy:** Tăng `policy_version`, sửa
+> `configs/risk_policy.yaml`, chạy lại `score_transactions.ps1` và
+> `load_ml_results.ps1`. Không cần train lại mô hình.
 
 ---
 
@@ -532,12 +536,16 @@ File `.joblib` được bỏ qua bởi Git vì có thể lớn; metadata, featur
 
 ```powershell
 .\scripts\score_transactions.ps1 `
-  -InputCsv "data/raw/PS_20174392719_1491204439457_log.csv" `
+  -FromSql `
   -Version "1.0.0" `
   -OutputCsv "output/model_scoring_full_v1.0.0.csv"
+
+.\scripts\load_ml_results.ps1
+python scripts/run_validation.py --require-ml
 ```
 
-Scoring chạy theo chunk 200.000 dòng để hạn chế sử dụng RAM.
+Scoring đọc theo chunk từ `FactTransaction` để giữ nguyên `TransactionKey`,
+`DateKey` và `TimeKey`, sau đó loader merge score/alert vào SQL Server.
 
 Các cột đầu ra chính:
 

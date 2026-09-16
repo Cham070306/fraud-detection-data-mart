@@ -11,10 +11,14 @@ INSERT INTO dim.DimDate (DateKey, StepDay, DayOfWeek, DayOfWeekNum, WeekOfSimula
 SELECT
     CONVERT(INT, CONVERT(CHAR(8), DATEADD(DAY, v.n - 1, '2023-01-01'), 112)) AS DateKey,
     v.n AS StepDay,
-    DATENAME(WEEKDAY, DATEADD(DAY, v.n - 1, '2023-01-01')) AS DayOfWeek,
-    DATEPART(WEEKDAY, DATEADD(DAY, v.n - 1, '2023-01-01')) AS DayOfWeekNum,
+    CHOOSE(
+        (DATEDIFF(DAY, '19000101', DATEADD(DAY, v.n - 1, '2023-01-01')) % 7) + 1,
+        'Monday','Tuesday','Wednesday','Thursday','Friday','Saturday','Sunday'
+    ) AS DayOfWeek,
+    (DATEDIFF(DAY, '19000101', DATEADD(DAY, v.n - 1, '2023-01-01')) % 7) + 1 AS DayOfWeekNum,
     ((v.n - 1) / 7) + 1 AS WeekOfSimulation,
-    CASE WHEN DATEPART(WEEKDAY, DATEADD(DAY, v.n - 1, '2023-01-01')) IN (1,7) THEN 1 ELSE 0 END AS IsWeekend
+    CASE WHEN (DATEDIFF(DAY, '19000101', DATEADD(DAY, v.n - 1, '2023-01-01')) % 7) + 1 IN (6,7)
+         THEN 1 ELSE 0 END AS IsWeekend
 FROM (VALUES
 (1),(2),(3),(4),(5),(6),(7),(8),(9),(10),(11),(12),(13),(14),(15),(16),(17),(18),(19),(20),(21),(22),(23),(24),(25),(26),(27),(28),(29),(30),(31)
 ) v(n)
@@ -62,15 +66,19 @@ GO
 
 INSERT INTO dim.DimRiskPolicy (RiskPolicyKey, PolicyVersion, RiskLevel, ScoreThresholdMin, ScoreThresholdMax, RecommendedAction, EffectiveDate, IsActive)
 SELECT * FROM (VALUES
-(1,'v1.0','LOW',0.0000,0.3000,'ALLOW','2026-08-09',1),
-(2,'v1.0','MEDIUM',0.3000,0.6000,'STEP_UP_VERIFY','2026-08-09',1),
-(3,'v1.0','HIGH',0.6000,0.8500,'HOLD_AND_REVIEW','2026-08-09',1),
-(4,'v1.0','CRITICAL',0.8500,1.0000,'BLOCK_AND_ALERT','2026-08-09',1)
+(1,'1.0.0','LOW',0.0000,0.3000,'ALLOW','2026-08-09',1),
+(2,'1.0.0','MEDIUM',0.3000,0.6000,'STEP_UP_VERIFY','2026-08-09',1),
+(3,'1.0.0','HIGH',0.6000,0.8500,'HOLD_AND_REVIEW','2026-08-09',1),
+(4,'1.0.0','CRITICAL',0.8500,1.0000,'BLOCK_AND_ALERT','2026-08-09',1)
 ) AS x(RiskPolicyKey, PolicyVersion, RiskLevel, ScoreThresholdMin, ScoreThresholdMax, RecommendedAction, EffectiveDate, IsActive)
 WHERE NOT EXISTS (SELECT 1 FROM dim.DimRiskPolicy p WHERE p.PolicyVersion = x.PolicyVersion AND p.RiskLevel = x.RiskLevel);
 GO
 
-INSERT INTO dim.DimModelVersion (ModelVersionKey, ModelName, Version, IsProduction)
-SELECT 1, 'LightGBM', 'v1.0', 1
+INSERT INTO dim.DimModelVersion (
+    ModelVersionKey, ModelName, Version, Precision, Recall, F2Score, PrAUC,
+    Threshold, IsProduction, ModelFilePath
+)
+SELECT 1, 'RandomForest', '1.0.0', 0.9992, 0.9992, 0.9992, 1.0000,
+       0.3200, 1, 'models/fraud_model_v1.0.0.joblib'
 WHERE NOT EXISTS (SELECT 1 FROM dim.DimModelVersion WHERE ModelVersionKey = 1);
 GO

@@ -1,8 +1,10 @@
 from __future__ import annotations
 import pandas as pd
-from src.common.config import VALID_TYPES
+from src.common.config import VALID_TYPES, SIMULATION_STEPS
 
-def validate_chunk(df: pd.DataFrame) -> tuple[pd.DataFrame, pd.DataFrame]:
+def validate_chunk(
+    df: pd.DataFrame, max_step: int | None = SIMULATION_STEPS
+) -> tuple[pd.DataFrame, pd.DataFrame]:
     reasons = pd.Series([''] * len(df), index=df.index)
 
     required = [
@@ -31,7 +33,9 @@ def validate_chunk(df: pd.DataFrame) -> tuple[pd.DataFrame, pd.DataFrame]:
     reasons[bad_dest] += 'invalid_dest_account;'
 
     numeric_step = pd.to_numeric(df['step'], errors='coerce')
-    bad_step = numeric_step.isna() | (numeric_step < 1) | (numeric_step > 744) | (numeric_step % 1 != 0)
+    bad_step = numeric_step.isna() | (numeric_step < 1) | (numeric_step % 1 != 0)
+    if max_step is not None:
+        bad_step |= numeric_step > max_step
     reasons[bad_step] += 'invalid_step;'
 
     is_valid = reasons == ''

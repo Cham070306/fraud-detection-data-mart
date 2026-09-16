@@ -26,3 +26,13 @@ def test_validate_rejects_bad_account_format_length_and_step():
     valid, reject = validate_chunk(pd.DataFrame(rows))
     assert valid.empty
     assert len(reject) == 5
+
+
+def test_validate_can_accept_extended_simulation_steps():
+    row = {'step': 745, 'type': 'TRANSFER', 'amount': 10.0,
+           'nameOrig': 'C1', 'oldbalanceOrg': 10.0, 'newbalanceOrig': 0.0,
+           'nameDest': 'M2', 'oldbalanceDest': 0.0, 'newbalanceDest': 0.0,
+           'isFraud': 0, 'isFlaggedFraud': 0}
+    valid, reject = validate_chunk(pd.DataFrame([row]), max_step=None)
+    assert len(valid) == 1
+    assert reject.empty

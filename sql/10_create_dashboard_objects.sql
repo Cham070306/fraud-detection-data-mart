@@ -19,10 +19,34 @@ IF NOT EXISTS (SELECT 1 FROM sys.columns
                  AND name = N'AnalystDecision')
 BEGIN
     ALTER TABLE fact.FactAlert ADD
-        AnalystDecision    VARCHAR(20)   NULL,
-        FeedbackComment    NVARCHAR(500) NULL,
-        ReviewedBy         NVARCHAR(100) NULL,
-        ReviewedAt         DATETIME2     NULL;
+        AnalystDecision VARCHAR(20) NULL;
+END
+GO
+
+IF NOT EXISTS (SELECT 1 FROM sys.columns
+               WHERE object_id = OBJECT_ID(N'fact.FactAlert')
+                 AND name = N'FeedbackComment')
+BEGIN
+    ALTER TABLE fact.FactAlert ADD
+        FeedbackComment NVARCHAR(500) NULL;
+END
+GO
+
+IF NOT EXISTS (SELECT 1 FROM sys.columns
+               WHERE object_id = OBJECT_ID(N'fact.FactAlert')
+                 AND name = N'ReviewedBy')
+BEGIN
+    ALTER TABLE fact.FactAlert ADD
+        ReviewedBy NVARCHAR(100) NULL;
+END
+GO
+
+IF NOT EXISTS (SELECT 1 FROM sys.columns
+               WHERE object_id = OBJECT_ID(N'fact.FactAlert')
+                 AND name = N'ReviewedAt')
+BEGIN
+    ALTER TABLE fact.FactAlert ADD
+        ReviewedAt DATETIME2 NULL;
 END
 GO
 

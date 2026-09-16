@@ -96,3 +96,40 @@ LEFT JOIN dim.DimAccount oa ON oa.AccountKey=f.OrigAccountKey
 LEFT JOIN dim.DimAccount da ON da.AccountKey=f.DestAccountKey
 LEFT JOIN dim.DimAmountBand ab ON ab.AmountBandKey=f.AmountBandKey;
 GO
+
+-- PaySim step mapping must be identical in ETL, ML scoring and the DW.
+SELECT COUNT_BIG(*) AS TimeMappingErrors
+FROM fact.FactTransaction
+WHERE TimeKey <> (StepRaw - 1) % 24
+   OR DateKey <> CONVERT(INT, CONVERT(CHAR(8),
+       DATEADD(DAY, (StepRaw - 1) / 24, '2023-01-01'), 112));
+GO
+
+-- ML natural keys must remain unique after repeated scoring loads.
+SELECT COUNT_BIG(*) AS DuplicateScoreKeys
+FROM (
+    SELECT TransactionKey, ModelVersionKey
+    FROM fact.FactModelScore
+    GROUP BY TransactionKey, ModelVersionKey
+    HAVING COUNT_BIG(*) > 1
+) d;
+GO
+
+SELECT COUNT_BIG(*) AS DuplicateAlertScores
+FROM (
+    SELECT ScoreKey
+    FROM fact.FactAlert
+    GROUP BY ScoreKey
+    HAVING COUNT_BIG(*) > 1
+) d;
+GO
+
+-- For v1.0.0 expect 6,362,620 scores and 8,218 alerts after ML load.
+SELECT mv.Version,
+       COUNT_BIG(DISTINCT ms.ScoreKey) AS ScoreRows,
+       COUNT_BIG(DISTINCT fa.AlertKey) AS AlertRows
+FROM dim.DimModelVersion mv
+LEFT JOIN fact.FactModelScore ms ON ms.ModelVersionKey = mv.ModelVersionKey
+LEFT JOIN fact.FactAlert fa ON fa.ScoreKey = ms.ScoreKey
+GROUP BY mv.Version;
+GO

@@ -11,6 +11,12 @@ chunk_size: 200000
 # Ngay bat dau simulation (step 1 = ngay nay)
 start_date: "2023-01-01"
 
+# Step lon nhat cho phep. Dat null neu nguon moi khong gioi han 744 gio.
+max_step: 744
+
+# Batch van thanh cong neu ty le reject khong vuot qua 0.1%.
+max_validation_error_rate: 0.001
+
 # Database settings (co the dung .env thay the)
 database:
   server: "localhost"

@@ -59,6 +59,8 @@ def load_fact_transaction(conn, df_transformed, lookups, batch_id):
     cur = conn.cursor()
     try:
         cur.execute(_CREATE_FACT_TEMP_SQL)
+        if hasattr(cur, "fast_executemany"):
+            cur.fast_executemany = True
         cur.executemany(_INSERT_FACT_TEMP_SQL, rows)
         cur.execute(_INSERT_NEW_FACTS_SQL)
         inserted = int(cur.fetchone()[0])

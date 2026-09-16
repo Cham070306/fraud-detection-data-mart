@@ -39,6 +39,8 @@ def query(conn: Any, sql: str, params: tuple = ()) -> list:
 def insert_rows(conn: Any, sql: str, rows: list) -> int:
     cur = conn.cursor()
     try:
+        if hasattr(cur, "fast_executemany"):
+            cur.fast_executemany = True
         cur.executemany(sql, rows)
         conn.commit()
         return cur.rowcount

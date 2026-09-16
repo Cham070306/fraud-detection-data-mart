@@ -86,7 +86,8 @@ with col_b:
                SUM(CASE WHEN ft.IsFraud = 1 THEN 1 ELSE 0 END) AS fraud_count
         FROM fact.FactTransaction ft
         JOIN dim.DimAmountBand ab ON ft.AmountBandKey = ab.AmountBandKey
-        WHERE ft.StepRaw BETWEEN ? AND ?
+        JOIN dim.DimDate d ON ft.DateKey = d.DateKey
+        WHERE d.StepDay BETWEEN ? AND ?
         GROUP BY ab.BandCode, ab.BandLabel
         ORDER BY ab.AmountBandKey
     """, (filters.step_day_min, filters.step_day_max))
@@ -119,7 +120,8 @@ with col_d:
                SUM(CASE WHEN ft.IsFraud = 1 THEN 1 ELSE 0 END) AS fraud_count
         FROM fact.FactTransaction ft
         JOIN dim.DimTime t ON ft.TimeKey = t.TimeKey
-        WHERE ft.StepRaw BETWEEN ? AND ?
+        JOIN dim.DimDate d ON ft.DateKey = d.DateKey
+        WHERE d.StepDay BETWEEN ? AND ?
         GROUP BY t.TimeSlot
         ORDER BY fraud_count DESC
     """, (filters.step_day_min, filters.step_day_max))
